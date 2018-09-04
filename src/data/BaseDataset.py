@@ -19,23 +19,26 @@ class BaseDataset(data.Dataset):
         self.cur_scale = self.scales[0]# current scale
 
         # set img files' start/end index
-        self.fileIdx = [r.split('-') for r in args.data_range.split('/')]
+        fileIdx = [r.split('-') for r in args.data_range.split('/')]
         if train:
-            self.fileIdx = self.fileIdx[0]
+            fileIdx = fileIdx[0]
         else:
-            self.fileIdx = self.fileIdx[-1]
-        self.fileIdx = [int(x) for x in self.fileIdx]
+            fileIdx = fileIdx[-1]
+        fileIdx = [int(x) for x in fileIdx]
 
         # set path                
-        self.path_root = os.path.join(args.dir_data, self.name)
-        self.path_bin = os.path.join(self.path_root, 'bin')
-        self.path_binfile = os.path.join(self.path_bin, self.name + "_bin.pt")
-        os.makedirs(self.path_bin, exist_ok = True)
+        path_root = os.path.join(args.dir_data, self.name)
+        path_bin = os.path.join(path_root, 'bin')
+        os.makedirs(path_bin, exist_ok = True)
+        if train:
+            path_bin = os.path.join(path_bin, self.name + "_train_bin.pt")
+        else:
+            path_bin = os.path.join(path_bin, self.name + "_test_bin.pt")
 
         # set images
-        filenames = sorted(glob.glob(os.path.join(self.path_root, '*.png')))
-        filenames = filenames[self.fileIdx[0] - 1: self.fileIdx[1]]
-        self.images = self._load_bin(filenames)
+        filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
+        filenames = filenames[fileIdx[0] - 1: fileIdx[1]]
+        self.images = self._load_bin(filenames, path_bin)
 
         #print(self.__len__())
         #item = self.__getitem__(150)
@@ -50,24 +53,27 @@ class BaseDataset(data.Dataset):
         return self.images[idx]
 
 
-    def _load_bin(self, names):
+    def _load_bin(self, names, path_bin):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
         #make_bin = (bin_number == len(names))
-        make_bin = not os.path.isfile(self.path_binfile)
+        make_bin = not os.path.isfile(path_bin)
         if make_bin:
-            print("Generating binary files...")
+            print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [imageio.imread(i) for i in names]
             print("Found",len(imgs), "images")
-            with open(self.path_binfile, "wb") as f: pickle.dump(imgs, f)
+            with open(path_bin, "wb") as f:
+                pickle.dump(imgs, f)
+                f.close()
             print("Finished generating binary files")
             return imgs
         else:
-            print("Loading binary files...")
-            with open(self.path_binfile, "rb") as f:
-                print(self.path_binfile)
+            print("Loading binary file:\t" + path_bin.split('/')[-1])
+            with open(path_bin, "rb") as f:
+                print(path_bin)
                 imgs = pickle.load(f)
                 print("Found",len(imgs), "images")
                 print("Finished loading binary files")
+                f.close()
                 return imgs
 
     def set_scale(self, scale):

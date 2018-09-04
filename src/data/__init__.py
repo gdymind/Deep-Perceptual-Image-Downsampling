@@ -12,11 +12,13 @@ class  Data:
         self.loader_train = None
         trainset = None
 
+        # load test dataset
+        testset = BaseDataset(args, train = False)
+        self.loader_test = BaseDataloader(args, testset,
+            batch_size = 1, shuffle = False, pin_memory = not args.cpu)
+
+        # load train dataset
         if not args.test_only:
             trainset = BaseDataset(args, train = True)
             self.loader_train = BaseDataloader(args, trainset,
                 batch_size = args.batch_size, pin_memory = not args.cpu)
-
-        testset = BaseDataset(args, train = False)
-        self.loader_test = BaseDataloader(args, testset,
-            batch_size = 1, shuffle = False, pin_memory = not args.cpu)

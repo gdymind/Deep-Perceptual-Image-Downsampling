@@ -69,7 +69,7 @@ parser.add_argument('--precision', type=str, default='single',
 
 # Training specifications
 parser.add_argument('--reset', action='store_true',
-                    help='reset the training')
+                    help='reset the training and start from the very beginning')
 parser.add_argument('--test_every', type=int, default=1000,
                     help='do test per every N batches')
 parser.add_argument('--epochs', type=int, default=300,
@@ -84,6 +84,20 @@ parser.add_argument('--test_only', action='store_true',
                     help='set this option to test the model')
 parser.add_argument('--gan_k', type=int, default=1,
                     help='k value for adversarial loss')
+
+# Log specifications
+parser.add_argument('--dir_log', type = str, default = '/home/gdymind/DPID/Experiment',
+                    help='log directory')
+parser.add_argument('--log_name', type=str, default='test',
+                    help='log folder name')
+parser.add_argument('--resume', type=int, default=0,
+                    help='resume from specific checkpoint')
+parser.add_argument('--save_models', action='store_true',
+                    help='save all intermediate models')
+parser.add_argument('--print_every', type=int, default=100,
+                    help='how many batches to wait before logging training status')
+parser.add_argument('--save_results', action='store_true',
+                    help='save output results')
 
 args = parser.parse_args()
 

@@ -7,7 +7,7 @@ parser.add_argument('--debug', action='store_true',
                     help='Enable debug mode')
 parser.add_argument('--template', default='.',
                     help='You can set various templates in arguments.py')
-
+"""
 # Hardware specifications
 parser.add_argument('--n_threads', type=int, default=6,
                     help='number of threads for data loading')
@@ -17,7 +17,7 @@ parser.add_argument('--n_GPUs', type=int, default=1,
                     help='number of GPUs')
 parser.add_argument('--seed', type=int, default=1,
                     help='random seed')
-                    """
+                    
 
 # Data specifications
 parser.add_argument('--dir_data', type=str, default='/home/gdymind/DPID/Dataset',
@@ -31,8 +31,8 @@ parser.add_argument('--data_test', type=str, default='DIV2K',
 parser.add_argument('--data_range', type=str, default='1-850/851-900',
                     help='train/test data range')
 
-parser.add_argument('--scale', type=str, default='2',
-                    help='down sampling scale')
+parser.add_argument('--scales', type=str, default='2',
+                    help='all the possible down scaling scales')
 parser.add_argument('--patch_size', type=int, default=192,
                     help='output patch size')
 
@@ -87,7 +87,7 @@ parser.add_argument('--gan_k', type=int, default=1,
 
 args = parser.parse_args()
 
-args.scale = list(map(lambda x: int(x), args.scale.split('+')))
+args.scales = list(map(lambda x: int(x), args.scales.split('+')))
 
 for arg in vars(args):
     if vars(args)[arg] == 'True':

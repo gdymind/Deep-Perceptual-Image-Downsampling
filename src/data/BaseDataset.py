@@ -15,9 +15,10 @@ class BaseDataset(data.Dataset):
         self.name = name
 
         self.train = train
-        self.scale = args.scale
+        self.scales = args.scales# all the possible scales
+        self.cur_scale = self.scales[0]# current scale
 
-        #set img files' start/end index
+        # set img files' start/end index
         self.fileIdx = [r.split('-') for r in args.data_range.split('/')]
         if train:
             self.fileIdx = self.fileIdx[0]
@@ -25,24 +26,21 @@ class BaseDataset(data.Dataset):
             self.fileIdx = self.fileIdx[-1]
         self.fileIdx = [int(x) for x in self.fileIdx]
 
-        #set path                
+        # set path                
         self.path_root = os.path.join(args.dir_data, self.name)
         self.path_bin = os.path.join(self.path_root, 'bin')
         self.path_binfile = os.path.join(self.path_bin, self.name + "_bin.pt")
         os.makedirs(self.path_bin, exist_ok = True)
 
-        #set images
+        # set images
         filenames = sorted(glob.glob(os.path.join(self.path_root, '*.png')))
         filenames = filenames[self.fileIdx[0] - 1: self.fileIdx[1]]
         self.images = self._load_bin(filenames)
 
-        """
-        print(self.__len__())
-        item = self.__getitem__(150)
-        viewer = ImageViewer(item)
-        viewer.show()
-        """
-
+        #print(self.__len__())
+        #item = self.__getitem__(150)
+        #viewer = ImageViewer(item)
+        #viewer.show()
 
     def __len__(self):
         return len(self.images)
@@ -72,3 +70,5 @@ class BaseDataset(data.Dataset):
                 print("Finished loading binary files")
                 return imgs
 
+    def set_scale(self, scale):
+        self.cur_scale = scale

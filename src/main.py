@@ -5,4 +5,4 @@ import data
 
 loader = data.Data(args)
 
-print("flag")
+print("The whole program has exited.")

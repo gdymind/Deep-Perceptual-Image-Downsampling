@@ -4,6 +4,7 @@ import glob
 import pickle
 import numpy as np
 import imageio
+from skimage.viewer import ImageViewer
 
 import torch
 import torch.utils.data as data
@@ -23,15 +24,32 @@ class BaseDataset(data.Dataset):
         else:
             self.fileIdx = self.fileIdx[-1]
         self.fileIdx = [int(x) for x in self.fileIdx]
-                
+
+        #set path                
         self.path_root = os.path.join(args.dir_data, self.name)
         self.path_bin = os.path.join(self.path_root, 'bin')
         self.path_binfile = os.path.join(self.path_bin, self.name + "_bin.pt")
         os.makedirs(self.path_bin, exist_ok = True)
 
+        #set images
         filenames = sorted(glob.glob(os.path.join(self.path_root, '*.png')))
         filenames = filenames[self.fileIdx[0] - 1: self.fileIdx[1]]
-        images = self._load_bin(filenames)
+        self.images = self._load_bin(filenames)
+
+        """
+        print(self.__len__())
+        item = self.__getitem__(150)
+        viewer = ImageViewer(item)
+        viewer.show()
+        """
+
+
+    def __len__(self):
+        return len(self.images)
+
+
+    def __getitem__(self, idx):
+        return self.images[idx]
 
 
     def _load_bin(self, names):

@@ -20,52 +20,40 @@ parser.add_argument('--seed', type=int, default=1,
                     
 
 # Data specifications
+     # directory
 parser.add_argument('--dir_data', type=str, default='/home/gdymind/DPID/Dataset',
                     help='dataset directory')
-
+     # dataset
 parser.add_argument('--data_train', type=str, default='DIV2K',
                     help='train dataset name')
 parser.add_argument('--data_test', type=str, default='DIV2K',
                     help='test dataset name')
-
 parser.add_argument('--data_range', type=str, default='1-850/851-900',
                     help='train/test data range')
-
-parser.add_argument('--scales', type=str, default='2',
-                    help='all the possible down scaling scales')
-parser.add_argument('--patch_size', type=int, default=192,
-                    help='output patch size')
-
-parser.add_argument('--n_colors', type=int, default=3,
-                    help='number of color channels to use')
+     # techiniques
 parser.add_argument('--chop', action='store_true',
                     help='enable memory-efficient forward')
-parser.add_argument('--no_augment', action='store_true',
-                    help='do not use data augmentation')
 
 # Model specifications
+     # model
 parser.add_argument('--model', default='DPID',
                     help='model name')
-parser.add_argument('--act', type=str, default='relu',
-                    help='activation function')
 parser.add_argument('--pre_train', type=str, default='.',
                     help='pre-trained model directory')
-parser.add_argument('--extend', type=str, default='.',
-                    help='')
-parser.add_argument('--n_resblocks', type=int, default=16,
-                    help='number of residual blocks')
-parser.add_argument('--n_feats', type=int, default=64,
-                    help='number of feature maps')
-parser.add_argument('--res_scale', type=float, default=1,
-                    help='residual scaling')
+parser.add_argument('--scales', type=str, default='2',
+                    help='all the possible down scaling scales')
+     # block
+parser.add_argument('--n_RDN_block', type=int, default=16,
+                    help='number of residual dense blocks')
+parser.add_argument('--growth_rate', type=int, default=32,
+                    help = "growrh rate of the residual dense blocks")
+     # techniques
 parser.add_argument('--shift_mean', default=True,
-                    help='subtract pixel mean from the input')
+                    help='subtract pixel mean from the input')     
 parser.add_argument('--dilation', action='store_true',
                     help='use dilated convolution')
-parser.add_argument('--precision', type=str, default='single',
-                    choices=('single', 'half'),
-                    help='FP precision for test (single | half)')
-
+parser.add_argument('--res_scale', type=float, default=0.1,
+                    help='residual scaling')
 
 # Training specifications
 parser.add_argument('--reset', action='store_true',
@@ -84,6 +72,8 @@ parser.add_argument('--test_only', action='store_true',
                     help='set this option to test the model')
 parser.add_argument('--gan_k', type=int, default=1,
                     help='k value for adversarial loss')
+parser.add_argument('--patch_size', type=int, default=192,
+                    help='output patch size')
 
 # Log specifications
 parser.add_argument('--dir_log', type = str, default = '/home/gdymind/DPID/Experiment',

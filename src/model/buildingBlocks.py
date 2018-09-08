@@ -56,7 +56,7 @@ class ResBlock(nn.Module):
         return y
 
 class DenseBlock(nn.Module):
-    def __init__(self, n_channels, growth_rate, kernel_size = 3, stride = 1,
+    def __init__(self, in_channels, growth_rate, kernel_size = 3, stride = 1,
                 bias = True, bn = False, act = nn.ReLU(True)): # out_channels aka growth_rate
         super(DenseBlock, self).__init__()
         self.conv = CBA_Block(in_channels, growth_rate, kernel_size, stride, bias, act = act)
@@ -70,13 +70,16 @@ class ResDenseBlock(nn.Module)
     def __init__(self, in_channels, growth_rate, n_dense_layers): # out_channels aka growth_rate
         sup(ResDenseBlock, self).__init__()
 
+        cur_channels = in_channels
+
         mDenlist = []
         for i in range(n_dense_layers):
             mDenlist.append(DenseBlock(in_channels, growth_rate))
-            in_channels += growth_rate
+            cur_channels += growth_rate
 
         self.DenseLayers = nn.Sequential(*mDenlist)
-        self.Conv1x1 = nn.Conv2d(in_channels, in_channels, kernel_size = 1, padding = 0, stride = 1, bias = False)
+        self.Conv1x1 = nn.Conv2d(cur_channels, in_channels, kernel_size = 1, # attention that the number of channels is restored
+            padding = 0, stride = 1, bias = False)
 
     def forward(self, x):
         out  = self.DenseLayers(x)

@@ -10,6 +10,10 @@ def ConvHalfPad(in_channels, out_channels, kernel_size = 3, stride = 1, bias = T
     return nn.Conv2d(in_channels, out_channels, kernel_size, stride = 1,
         padding = (kernel_size // 2), bias = bias)
 
+def ConvFusion(in_channels, out_channels, bias = True):
+    return nn.Conv2d(in_channels, out_channels, kernel_size = 1,
+            padding = 0, stride = 1, bias = bias)
+
 # conv + bn + activate(ReLU)
 class CBA_Block(nn.Sequential):
     def __init__(self, in_channels, out_channels, kernel_size = 3, stride = 1,
@@ -78,8 +82,7 @@ class ResDenseBlock(nn.Module)
             cur_channels += growth_rate
 
         self.DenseLayers = nn.Sequential(*mDenlist)
-        self.Conv1x1 = nn.Conv2d(cur_channels, in_channels, kernel_size = 1, # attention that the number of channels is restored
-            padding = 0, stride = 1, bias = False)
+        self.ConvFusion = ConvFusion(cur_channels, in_channels)
 
     def forward(self, x):
         out  = self.DenseLayers(x)

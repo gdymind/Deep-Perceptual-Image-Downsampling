@@ -89,3 +89,13 @@ class ResDenseBlock(nn.Module)
         out = self.Conv1x1(out)
         out += x
         return out
+
+class DownPoolBlock(nn.AvgPool2d):
+    def __init__(self, scale):
+        super(DownPoolBlock, self).__init__(kernel_size = scale)
+
+class DownConvBlock(nn.Conv2d):
+    def __init__(self, scale):
+        super(DownConvBlock, self).__init__(kernel_size = scale, stride = scale,
+            padding = 0, bias = True)
+        

@@ -98,6 +98,10 @@ parser.add_argument('--gan_k', type = int, default = 1,
 parser.add_argument('--patch_size', type = int, default = 192,
              help = 'output patch size')
 
+# Loss specifications
+parser.add_argument('--skip_threshold', type=float, default='1e6',
+                    help='skipping batch that has large error')
+
 # Log specifications
 parser.add_argument('--dir_log', type = str, default = '/home/gdymind/DPID/Experiment',
              help = 'log directory')

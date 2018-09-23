@@ -99,6 +99,11 @@ parser.add_argument('--patch_size', type = int, default = 192,
              help = 'output patch size')
 
 # Loss specifications
+parser.add_argument('--loss', type = str, default = '1*SSIM',
+                    help = """set of losses and their parameters.
+                    Use '+' to split different type of losses,
+                    and insert '*' between weights and loss_type
+                    """)
 parser.add_argument('--skip_threshold', type=float, default='1e6',
                     help='skipping batch that has large error')
 

@@ -9,6 +9,7 @@ class Checkpoint():
     def __init__(self, args):
         self.args = args
         self.log = torch.Tensor()
+
         self.dir = os.path.join(args.dir_log, args.log_name)
         self.dir_model = os.path.join(self.dir, "model")
         self.dir_result = os.path.join(self.dir, "result")
@@ -39,9 +40,6 @@ class Checkpoint():
     def save_log_txt(self, log):
         print(log)
         self.log_txt.write(log + '\n')
-
-    #def save_result(self, filename, save_list, scale):
-        #filename = os.path.join(self.dir_result)
 
     def stop(self):
         self.log_file.close()

@@ -126,14 +126,14 @@ parser.add_argument('--save_results', action = 'store_true',
 args = parser.parse_args()
 
 if args.dir_data == '@default': # Dataset directory: root/<dataset name>
-    args.dir = os.path.join(args.dir_root, 'Dataset')
+    args.dir_data = os.path.join(args.dir_root, 'Dataset')
 if args.dir_log == '@default': # Log files directory: root/Experiment/<model name>
     args.dir_log = os.path.join(args.dir_root, 'Experiment', args.model)
 
 args.scales = list(map(lambda x: int(x), args.scales.split('+')))
 
 for arg in vars(args):
-    if vars(args)[arg] = = 'True':
+    if vars(args)[arg] == 'True':
       vars(args)[arg] = True
-    elif vars(args)[arg] = = 'False':
+    elif vars(args)[arg] == 'False':
       vars(args)[arg] = False

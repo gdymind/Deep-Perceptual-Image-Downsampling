@@ -1,10 +1,5 @@
-from importlib import import_module
-
-from torch.utils.data.dataloader import default_collate
 from data.BaseDataset import BaseDataset
-from data.BaseDataloader import *
-
-#import data.BaseDataset as ds
+from torch.utils.data.dataloader import DataLoader
 
 class  Data:
     def __init__(self, args):
@@ -14,11 +9,11 @@ class  Data:
 
         # load test dataset
         testset = BaseDataset(args, train = False)
-        self.loader_test = BaseDataloader(args, testset,
-            batch_size = 1, shuffle = False, pin_memory = not args.cpu)
+        self.loader_test = DataLoader(testset, batch_size = 1,
+            shuffle = False, pin_memory = not args.cpu)
 
         # load train dataset
         if not args.test_only:
             trainset = BaseDataset(args, train = True)
-            self.loader_train = BaseDataloader(args, trainset,
-                batch_size = args.batch_size, pin_memory = not args.cpu)
+            self.loader_train = DataLoader(trainset, batch_size = args.batch_size,
+                shuffle = True, pin_memory = not args.cpu)

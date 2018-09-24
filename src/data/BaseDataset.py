@@ -69,7 +69,7 @@ class BaseDataset(data.Dataset):
         else:
             print("Loading binary file:\t" + path_bin.split('/')[-1])
             with open(path_bin, "rb") as f:
-                print(path_bin)
+                # print(path_bin)
                 imgs = pickle.load(f)
                 print("Found",len(imgs), "images")
                 print("Finished loading binary files")

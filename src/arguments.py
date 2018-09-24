@@ -1,27 +1,33 @@
+import os
 import argparse
-import template
 
 parser = argparse.ArgumentParser(description = 'DPID')
+
 # Hardware specifications
 parser.add_argument('--n_threads', type = int, default = 6,
-             help = 'number of threads for data loading')
+             help = 'the number of threads for data loading')
 parser.add_argument('--cpu', action = 'store_false',
              help = 'use cpu only')
 parser.add_argument('--n_GPU', type = int, default = 1,
-             help = 'number of GPU')
+             help = 'the number of GPU')
 parser.add_argument('--seed', type = int, default = 1,
              help = 'random seed')
+
+# Directory specifications
+parser.add_argument('--dir_root', type = str, default = '/home/gdymind/DPID',
+            help = 'root directory')
+parser.add_argument('--dir_data', type = str, default = '@default',
+             help = 'dataset directory')
+parser.add_argument('--dir_log', type = str, default = '@default',
+             help = 'log directory')
+parser.add_argument('--pre_train', type = str, default = '.',
+             help = 'pre-trained model directory')
              
 
 # Data specifications
-    # directory
-parser.add_argument('--dir_data', type = str, default = '/home/gdymind/DPID/Dataset',
-             help = 'dataset directory')
     # dataset
-parser.add_argument('--data_train', type = str, default = 'DIV2K',
-             help = 'train dataset name')
-parser.add_argument('--data_test', type = str, default = 'DIV2K',
-             help = 'test dataset name')
+parser.add_argument('--data_name', type = str, default = 'DIV2K',
+             help = 'dataset name')
 parser.add_argument('--data_range', type = str, default = '1-850/851-900',
              help = 'train/test data range')
 parser.add_argument('--n_channels', type = int, default = 3, # using Lab color space
@@ -34,8 +40,6 @@ parser.add_argument('--chop', action = 'store_true',
     # model
 parser.add_argument('--model', default = 'DPID',
              help = 'model name')
-parser.add_argument('--pre_train', type = str, default = '.',
-             help = 'pre-trained model directory')
 parser.add_argument('--scales', type = str, default = '2',
              help = 'all the possible down scaling scales')
     # block
@@ -108,8 +112,6 @@ parser.add_argument('--skip_threshold', type=float, default='1e6',
                     help='skipping batch that has large error')
 
 # Log specifications
-parser.add_argument('--dir_log', type = str, default = '/home/gdymind/DPID/Experiment',
-             help = 'log directory')
 parser.add_argument('--log_name', type = str, default = 'test',
              help = 'log folder name')
 parser.add_argument('--resume', type = int, default = 0,
@@ -122,6 +124,11 @@ parser.add_argument('--save_results', action = 'store_true',
              help = 'save output results')
 
 args = parser.parse_args()
+
+if args.dir_data == '@default': # Dataset directory: root/<dataset name>
+    args.dir = os.path.join(args.dir_root, 'Dataset')
+if args.dir_log == '@default': # Log files directory: root/Experiment/<model name>
+    args.dir_log = os.path.join(args.dir_root, 'Experiment', args.model)
 
 args.scales = list(map(lambda x: int(x), args.scales.split('+')))
 

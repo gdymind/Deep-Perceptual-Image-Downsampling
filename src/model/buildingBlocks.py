@@ -70,9 +70,9 @@ class DenseBlock(nn.Module):
         out = torch.cat((x, out), 1)# the first dimension is the batch index, so we should cat the second dimension
         return out
 
-class ResDenseBlock(nn.Module)
+class ResDenseBlock(nn.Module):
     def __init__(self, in_channels, growth_rate, n_dense_layers): # out_channels aka growth_rate
-        sup(ResDenseBlock, self).__init__()
+        super(ResDenseBlock, self).__init__()
 
         cur_channels = in_channels
 
@@ -95,7 +95,7 @@ class DownPoolBlock(nn.AvgPool2d):
         super(DownPoolBlock, self).__init__(kernel_size = scale)
 
 class DownConvBlock(nn.Conv2d):
-    def __init__(self, scale):
-        super(DownConvBlock, self).__init__(kernel_size = scale, stride = scale,
+    def __init__(self, in_channels, scale):
+        super(DownConvBlock, self).__init__(in_channels, 1, kernel_size = scale, stride = scale,
             padding = 0, bias = True)
         

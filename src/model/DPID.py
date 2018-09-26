@@ -4,14 +4,18 @@ import torch.nn.functional as F
 
 from model.buildingBlocks import *
 
+def make_model(args):
+    return DPID(args)
+
 # Deep Perceptual Image Downsampling Net
 class  DPID(nn.Module):
     def __init__(self, args):
         super(DPID, self).__init__()
 
-        self.scale = args.scale
+        self.scales = args.scales
 
         n_channels = args.n_channels
+        n_shallow_feature = args.n_shallow_feature
         n_feature = args.n_feature
 
         n_ResDenseBlock = args.n_ResDenseBlock
@@ -38,13 +42,13 @@ class  DPID(nn.Module):
 
         # down scaling
         mlist = []
-        mlist.append(DownConvBlock(self.scale))
+        mlist.append(DownConvBlock(n_feature, self.scales))
         self.Down = nn.Sequential(*mlist)
 
     def forward(self, x):
-        x = self.SFE(x)
-        x = self.ResDenseBlocks(out)
-        x = self.GFF(out)
-        x = self.Down(x)
+        out = self.SFE(x)
+        out = self.ResDenseBlocks(out)
+        out = self.GFF(out)
+        out = self.Down(out)
 
-        return x
+        return out

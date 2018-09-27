@@ -18,10 +18,7 @@ class BaseModel(nn.Module):
         self.cpu = args.cpu
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.n_GPUs = args.n_GPUs
-
-        if args.dir_model == '@default':
-            args.dir_model = 'model'
-        self.dir = os.path.join(args.dir_root, args.dir_model)
+        self.dir = os.path.join(args.dir_root, 'model')
 
         # import corresponding model
         module = import_module('model.' + args.model)
@@ -43,29 +40,27 @@ class BaseModel(nn.Module):
     def load_model(self, version):
         resume_file = ''
 
-        if version == 'X':
-            resume_file = 'X'
-        elif version[0] == '@':
-            resume_file = version[1: ]
-        else:
+        if version != 'X':
             resume_file = os.path.join(self.dir, 'model_{}.pt'.format(version))
-
-        if resume_file != 'X':
             self.load_state_dict(
                 torch.load(resume_file, map_location = self.device))
+            
+    def save(self, epoch, is_best = False):
+        sd = self.model.state_dict()
 
-    def save(self, apath, epoch, is_best = False):
         torch.save(
-            self.model.state_dict(), 
-            os.path.join(apath, 'model', 'model_latest.pt'))
+            sd,
+            os.path.join(self.dir, 'model_{}.pt'.format(epoch)))
+
+        torch.save(
+            sd, 
+            os.path.join(self.dir, 'model_latest.pt'))
+
         if is_best:
             torch.save(
-                self.model.state_dict(),
-                os.path.join(apath, 'model', 'model_best.pt'))
-        if self.save_models:
-            torch.save(
-                self.model.state_dict(),
-                os.path.join(apath, 'model', 'model_{}.pt'.format(epoch)))
+                sd,
+                os.path.join(self.dir, 'model_best.pt'))
+
 
     def forward(self, x, scale):
         target = self.get_model()       

@@ -11,30 +11,30 @@ class SSIM(nn.Module):
         
         self.window_size = window_size
         self.size_average = size_average
-        self.window = _create_weights(window_size, n_channel)
+        self.window = self._create_weights(window_size, n_channel)
         self.window.to(device)
         
 
     def forward(self, img1, img2):
         n_channel = img1.size()[1]
 
-        return _calc_ssim(img1, img2, self.window, self.window_size, n_channel, self.size_average)
+        return _calc_ssim(img1, img2, self.window, self.window_size, n_channel, size_average = self.size_average)
         
 
     def _gaussian(self, window_size, sigma):
-    mid = (window_size - 1) / 2
-    y = nd.array([-1 * (x - mid) * (x - mid)
-                    for x in range(window_size)])
-    y /= 2 * sigma * sigma
-    y = np.exp(y)
-    y /= np.sum(y)
+        mid = window_size // 2
+        y = np.array([-1.0 * (x - mid) * (x - mid)
+                        for x in range(window_size)])
+        y /= 2 * sigma * sigma
+        y = np.exp(y)
+        y /= np.sum(y)
 
-    return torch.Tensor(y)
+        return torch.Tensor(y)
 
     def _create_weights(self, window_size, n_channel):
-        window = gaussian(window_size, 1.5).unsqueeze(1) # create n by 1 matrix
-        window.mm_(window.t()) # create n by n matrix
-        window.unsqueeze_(0).unsqueeze_(0).expand_(n_channel, 1, window_size, window_size) # add 2 dimensions corresponding to channels and feature maps
+        window = self._gaussian(window_size, 1.5).unsqueeze(1) # create n by 1 matrix
+        window = window.mm(window.t()) # create n by n matrix
+        window = window.unsqueeze(0).unsqueeze(0).expand(n_channel, 1, window_size, window_size) # add 2 dimensions corresponding to channels and feature maps
         window /= window.sum()
 
         return window
@@ -49,9 +49,12 @@ class SSIM(nn.Module):
         mu12 = mu * mu2
 
         # sigma is contrast, which is estimated as the standard deviation
+        # padding == 0?
         sigma1_sq = F.conv2d(img1 * img1, window, groups = n_channel) - mu1_sq
         sigma2_sq = F.conv2d(img2 * img2, window, groups = n_channel) - mu2_sq
         sigma12 = F.conv2d(img1 * img2, window, groups = n_channel) - mu12
+
+        # C1 == C2 == 0
 
         ssim_map = (2 * mu12 + C1) * (2 * sigma12 + C2)
         ssim_map /= (mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2)

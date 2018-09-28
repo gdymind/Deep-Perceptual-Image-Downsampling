@@ -1,35 +1,32 @@
 import os
 from importlib import import_module
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
 import torch.nn.modules as modules
 
-"""
-class _Loss(Module):
-    def __init__(self, size_average=None, reduce=None, reduction='elementwise_mean'):
-        super(_Loss, self).__init__()
-        if size_average is not None or reduce is not None:
-            self.reduction = _Reduction.legacy_get_string(size_average, reduce)
-        else:
-            self.reduction = reduction
-"""
-
 
 class Loss(modules.loss._Loss):
-    def __init__(self, args):
+    def __init__(self, args, checkpoint):
         super(Loss, self).__init__()
 
-        self.n_GPU = args.n_GPU
+        self.ckp = checkpoint
+        self.device = torch.device('cpu' if args.cpu else 'cuda')
+        self.n_GPUs = args.n_GPUs
+        self.dir = os.path.join(args.dir_root, 'loss')
+
         self.loss = []
         self.loss_module = nn.ModuleList()
 
         for l in args.loss.split('+'):
-            loss_weight, loss_type = l.split('_')
+            loss_weight, loss_type = l.split('*')
 
             if loss_type.find("SSIM") >= 0:
                 module = import_module('loss.SSIM')
                 loss_function = getattr(module, 'SSIM')()
+            else:
+                pass
 
             self.loss.append({
                 'type': loss_type,
@@ -50,8 +47,7 @@ class Loss(modules.loss._Loss):
                 self.loss_module.append(l['function'])
 
         self.log = torch.Tensor()
-        device = torch.device('cpu' if args.cpu else 'cuda')
-        self.loss_module.to(device)
+        self.loss_module.to(self.device)
 
         # if args.precision == 'half': self.loss_module.half()
         # if not args.cpu and args.n_GPUs > 1:
@@ -68,11 +64,11 @@ class Loss(modules.loss._Loss):
                 loss = l['function'](img_down, img)
                 effective_loss = l['weight'] * loss
                 losses.append(effective_loss)
-                # self.log[-1, i] += effective_loss.item()
+                self.log[-1, i] += effective_loss.item()
 
         loss_sum = sum(losses)
-        # if len(self.loss) > 1:
-        #     self.log[-1, -1] += loss_sum.item()
+        if len(self.loss) > 1:
+            self.log[-1, -1] += loss_sum.item()
 
         return loss_sum
 
@@ -109,25 +105,6 @@ class Loss(modules.loss._Loss):
             plt.savefig('{}/loss_{}.pdf'.format(apath, l['type']))
             plt.close(fig)
 
-    def save(self, apath):
-        torch.save(self.state_dict(), os.path.join(apath, 'loss.pt'))
-        torch.save(self.log, os.path.join(apath, 'loss_log.pt'))
-
-    def load(self, apath, cpu=False):
-        if cpu:
-            kwargs = {'map_location': lambda storage, loc: storage}
-        else:
-            kwargs = {}
-
-        self.load_state_dict(torch.load(
-            os.path.join(apath, 'loss.pt'),
-            **kwargs
-        ))
-        self.log = torch.load(os.path.join(apath, 'loss_log.pt'))
-        for l in self.loss_module:
-            if hasattr(l, 'scheduler'):
-                for _ in range(len(self.log)): l.scheduler.step()
-
     def display_loss(self, batch):
         n_samples = batch + 1
         log = []
@@ -135,3 +112,19 @@ class Loss(modules.loss._Loss):
             log.append('[{}: {:.4f}]'.format(l['type'], c / n_samples))
 
         return ''.join(log)
+
+    def load_loss(self, version):
+        if version != 'X':
+            resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
+            self.load_state_dict(
+                torch.load(resume_file, map_location = self.device))
+            self.log = torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)))
+
+        # for l in self.loss_module:
+        #     if hasattr(l, 'scheduler'):
+        #         for _ in range(len(self.log)): l.scheduler.step()
+
+    def save(self, epoch):
+        torch.save(self.state_dict(), os.path.join(self.dir, 'loss_{}.pt'.format(epoch)))
+        torch.save(self.log, os.path.join(self.dir, 'loss_log_{}.pt'.format(epoch)))
+

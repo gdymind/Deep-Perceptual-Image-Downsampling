@@ -20,8 +20,10 @@ parser.add_argument('--dir_data', type = str, default = '@default',
             help = 'dataset directory')
 parser.add_argument('--dir_log', type = str, default = '@default',
             help = 'log directory')
-parser.add_argument('--dir_model', type = str, default = '@default',
-            help = 'saved models directory')
+# parser.add_argument('--dir_model', type = str, default = '@default',
+#             help = 'saved models directory')
+# parser.add_argument('--dir_loss', type = str, default = '@default',
+#             help = 'saved loss directory')
 
 # Data specifications
     # dataset
@@ -126,8 +128,6 @@ parser.add_argument('--resume_version', type = str, default = 'X',
                 @<path>: @ means it follows a certain path of a pre-trained model file
                 <number>: a certain version. e.g. 233 would load model233.pt
                 """)
-parser.add_argument('--save_models', action = 'store_true',
-            help = 'save all intermediate models')
 parser.add_argument('--print_every', type = int, default = 100,
             help = 'how many batches to wait before logging training status')
 parser.add_argument('--save_results', action = 'store_true',

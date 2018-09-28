@@ -125,9 +125,9 @@ class Loss(modules.loss._Loss):
             #     )
 
 
-            # for l in self.loss_module:
-            #     if hasattr(l, 'scheduler'):
-            #         for _ in range(len(self.log)): l.scheduler.step()
+        # for l in self.loss_module:
+        #     if hasattr(l, 'scheduler'):
+        #         for _ in range(len(self.log)): l.scheduler.step()
 
     def save(self, epoch):
         torch.save(self.state_dict(), os.path.join(self.dir, 'loss_{}.pt'.format(epoch)))

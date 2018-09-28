@@ -87,7 +87,7 @@ class Trainer():
             self.test()
             return True
         else:
-            return self.scheduler.last_epoch + 1 >= self.args.epoch
+            return self.scheduler.last_epoch + 1 >= self.args.epochs
 
     def train(self):
         self.model.train(True)

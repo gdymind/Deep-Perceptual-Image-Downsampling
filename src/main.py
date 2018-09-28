@@ -16,4 +16,8 @@ model = model.BaseModel(args, checkpoint)
 loss = loss.Loss(args, checkpoint) if not args.test_only else None
 trainer = trainer.Trainer(args, loader, model, loss, checkpoint)
 
+while not trainer.should_terminate():
+    trainer.train()
+    trainer.test()
+
 print("The whole program has exited.")

@@ -17,6 +17,7 @@ class BaseDataset(data.Dataset):
         self.train = train
         self.scales = args.scales# all the possible scales
         self.cur_scale = self.scales[0]# current scale
+        self.device = torch.device('cpu' if args.cpu else 'cuda')
 
         # set img files' start/end index
         fileIdx = [r.split('-') for r in args.data_range.split('/')]
@@ -50,7 +51,7 @@ class BaseDataset(data.Dataset):
 
 
     def __getitem__(self, idx):
-        return self.images[idx]
+        return torch.from_numpy(self.images[idx]).float().to(self.device)
 
 
     def _load_bin(self, names, path_bin):

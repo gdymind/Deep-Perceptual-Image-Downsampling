@@ -1,23 +1,26 @@
 import os
 import math
+import numpy as np
+import scipy.misc as misc
 
 import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
 
 class Trainer():
-    def __init__(self, args, loader, model, loss, ckp):
+    def __init__(self, args, loader, my_model, loss, ckp):
         self.args = args
-        self.scale = args.scale
+        self.scales = args.scales
 
         self.loader_train = loader.loader_train
         self.loader_test = loader.loader_test
-        self.model = model
+        self.model = my_model
         self.loss = loss
-        self.cpk = cpk
+        self.ckp = ckp
+        self.dir = os.path.join(args.dir_root, 'optimizer')
 
-        self.optimizer = _create_optimizer(self.args, self.model)
-        self.scheduler = _create_scheduler(self.args, self.optimizer)
+        self.load_optimizer(args.resume_version)
+        self.scheduler = self._create_scheduler(self.args, self.optimizer)
 
         self.error_last = 1e8 # error in the last step
 
@@ -32,8 +35,8 @@ class Trainer():
         """
 
 
-    def _create_optimizer(args, model):
-        trainable = filter(lambda x: x.require_grad, model.parameters())
+    def _create_optimizer(self, args, model):
+        trainable = filter(lambda x: x.requires_grad, model.parameters())
 
         if args.optimizer == 'SGD':
             opt_algorithm = optim.SGD
@@ -53,7 +56,7 @@ class Trainer():
 
         return opt_algorithm(trainable, **opt_args)
 
-    def _create_scheduler(args, optimizer):
+    def _create_scheduler(self, args, optimizer):
         if args.decay_type == 'step':
             scheduler = lrs.StepLR(optimizer, step_size = args.lr_decay, gamma = args.gamma)
         else:
@@ -64,6 +67,15 @@ class Trainer():
             scheduler = lrs.MultiStepLR(optimizer, milstones = milstones, gamma = args.gamma)
 
         return scheduler
+
+    def load_optimizer(self, version):
+        if version != 'X':
+            resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+            self.optimizer.load_state_dict(
+                torch.load(resume_file, map_location = self.device))
+        else:
+            self.optimizer = self._create_optimizer(self.args, self.model)
+
 
     def convert_tensor_device(self, *tensors):
         device = torch.device('cpu' if self.args.cpu else 'cuda')
@@ -127,6 +139,12 @@ class Trainer():
 
 
     def test(self):
+        def save_result_imgs(self, filename, save_list, scale):
+            filename = os.path.join(self.dir_log, 'results', '{}x{}'.format(filename, scale))
+            for img in save_list:
+                ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy()
+                misc.imsave('{}.png'.format(filename), ndarr)
+
         self.model.eval() # set test mode
         epoch = self.scheduler.last_epoch + 1
 

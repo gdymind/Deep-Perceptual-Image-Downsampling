@@ -19,43 +19,8 @@ class Loss(modules.loss._Loss):
         self.loss = []
         self.loss_module = nn.ModuleList()
 
-        for l in args.loss.split('+'):
-            loss_weight, loss_type = l.split('*')
+        self.load_loss(args, args.resume_version)
 
-            if loss_type.find("SSIM") >= 0:
-                module = import_module('loss.SSIM')
-                loss_function = getattr(module, 'SSIM')()
-            else:
-                pass
-
-            self.loss.append({
-                'type': loss_type,
-                'weight': float(loss_weight),
-                'function': loss_function
-                })
-
-        if len(self.loss) > 1:
-            self.loss.append({
-                'type': 'Total',
-                'weight': 0,
-                'function': None
-                })
-
-        for l in self.loss:
-            if l['function'] is not None:
-                print('{:.3f} * {}'.format(l['weight'], l['type']))
-                self.loss_module.append(l['function'])
-
-        self.log = torch.Tensor()
-        self.loss_module.to(self.device)
-
-        # if args.precision == 'half': self.loss_module.half()
-        # if not args.cpu and args.n_GPUs > 1:
-        #     self.loss_module = nn.DataParallel(
-        #         self.loss_module, range(args.n_GPUs)
-        #     )
-
-        # if args.load != '.': self.load(ckp.dir, cpu=args.cpu)
 
     def forward(self, img_down, img):
         losses = []
@@ -113,17 +78,56 @@ class Loss(modules.loss._Loss):
 
         return ''.join(log)
 
-    def load_loss(self, version):
+    def load_loss(self, args, version):
         if version != 'X':
             resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
             self.load_state_dict(
                 torch.load(resume_file, map_location = self.device))
             self.log.load_state_dict(
-                torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version))))
+                torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)),
+                    map_location = self.device))
+        else:
+            for l in args.loss.split('+'):
+                loss_weight, loss_type = l.split('*')
 
-        # for l in self.loss_module:
-        #     if hasattr(l, 'scheduler'):
-        #         for _ in range(len(self.log)): l.scheduler.step()
+                if loss_type.find("SSIM") >= 0:
+                    module = import_module('loss.SSIM')
+                    loss_function = getattr(module, 'SSIM')()
+                else:
+                    pass
+
+                self.loss.append({
+                    'type': loss_type,
+                    'weight': float(loss_weight),
+                    'function': loss_function
+                    })
+
+            if len(self.loss) > 1:
+                self.loss.append({
+                    'type': 'Total',
+                    'weight': 0,
+                    'function': None
+                    })
+
+            for l in self.loss:
+                if l['function'] is not None:
+                    print('{:.3f} * {}'.format(l['weight'], l['type']))
+                    self.loss_module.append(l['function'])
+
+            self.log = torch.Tensor()
+            self.log.to(self.device)
+            self.loss_module.to(self.device)
+
+            # if args.precision == 'half': self.loss_module.half()
+            # if not args.cpu and args.n_GPUs > 1:
+            #     self.loss_module = nn.DataParallel(
+            #         self.loss_module, range(args.n_GPUs)
+            #     )
+
+
+            # for l in self.loss_module:
+            #     if hasattr(l, 'scheduler'):
+            #         for _ in range(len(self.log)): l.scheduler.step()
 
     def save(self, epoch):
         torch.save(self.state_dict(), os.path.join(self.dir, 'loss_{}.pt'.format(epoch)))

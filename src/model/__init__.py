@@ -38,8 +38,6 @@ class BaseModel(nn.Module):
         self.load_model(args.resume_version)
 
     def load_model(self, version):
-        resume_file = ''
-
         if version != 'X':
             resume_file = os.path.join(self.dir, 'model_{}.pt'.format(version))
             self.load_state_dict(

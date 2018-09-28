@@ -118,7 +118,8 @@ class Loss(modules.loss._Loss):
             resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
             self.load_state_dict(
                 torch.load(resume_file, map_location = self.device))
-            self.log = torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)))
+            self.log.load_state_dict(
+                torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version))))
 
         # for l in self.loss_module:
         #     if hasattr(l, 'scheduler'):

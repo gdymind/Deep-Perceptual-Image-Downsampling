@@ -29,7 +29,7 @@ parser.add_argument('--dir_log', type = str, default = '@default',
     # dataset
 parser.add_argument('--data_name', type = str, default = 'DIV2K',
             help = 'dataset name')
-parser.add_argument('--data_range', type = str, default = '1-850/851-900',
+parser.add_argument('--data_range', type = str, default = '1-8/9-16',
             help = 'train/test data range')
 parser.add_argument('--n_channels', type = int, default = 3, # using Lab color space
             help = 'the number of channels')

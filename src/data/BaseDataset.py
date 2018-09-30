@@ -1,5 +1,6 @@
 import os
 import glob
+import random
 
 import pickle
 import numpy as np
@@ -18,6 +19,7 @@ class BaseDataset(data.Dataset):
         self.scales = args.scales# all the possible scales
         self.cur_scale = self.scales[0]# current scale
         self.device = torch.device('cpu' if args.cpu else 'cuda')
+        self.patch_size = args.patch_size
 
         # set img files' start/end index
         fileIdx = [r.split('-') for r in args.data_range.split('/')]
@@ -51,8 +53,7 @@ class BaseDataset(data.Dataset):
 
 
     def __getitem__(self, idx):
-        return torch.from_numpy(self.images[idx]).float().to(self.device)
-
+        return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
 
     def _load_bin(self, names, path_bin):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -79,3 +80,29 @@ class BaseDataset(data.Dataset):
 
     def set_scale(self, scale):
         self.cur_scale = scale
+
+    def data_augument(self, img):
+        flipx = random.random() <= 0.5
+        flipy = random.random() <= 0.5
+        transpose = random.random() <= 0.5
+
+        if flipx:
+            img = img[::-1, :, :] # reverse the first dimension using slicing
+        if flipy:
+            img = img[:, ::-1, :]
+        if transpose:
+            img = img.transpose(1, 0, 2) # swap x-y aixes
+
+        return np.ascontiguousarray(img)
+
+    def get_patch(self, idx):
+        img = np.copy(self.images[idx])
+        size_i, size_j = img.shape[:2]
+        
+        p = self.patch_size
+
+        i = random.randrange(0, size_i - p + 1)
+        j = random.randrange(0, size_j - p + 1)
+        img = img[i: i + p, j: j + p, :]
+
+        return self.data_augument(img)

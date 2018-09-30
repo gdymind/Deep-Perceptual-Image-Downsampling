@@ -105,7 +105,7 @@ parser.add_argument('--test_only', action = 'store_true',
             help = 'set this option to test the model')
 parser.add_argument('--gan_k', type = int, default = 1,
             help = 'k value for adversarial loss')
-parser.add_argument('--patch_size', type = int, default = 192,
+parser.add_argument('--patch_size', type = int, default = 256,
             help = 'output patch size')
 
 # Loss specifications

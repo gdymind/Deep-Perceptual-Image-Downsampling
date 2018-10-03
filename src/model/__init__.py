@@ -11,7 +11,6 @@ class BaseModel(nn.Module):
         super(BaseModel, self).__init__()
         print('Making model...')
 
-        self.scale = args.scales
         # self.self_ensemble = args.self_ensemble
         # self.chop = args.chop
         # self.precision = args.precision
@@ -59,8 +58,13 @@ class BaseModel(nn.Module):
                 sd,
                 os.path.join(self.dir, 'model_best.pt'))
 
+    def get_model(self):
+        if self.n_GPUs == 1:
+            return self.model
+        else:
+            return self.model.module
 
-    def forward(self, x, scale):
+    def forward(self, x):
         target = self.get_model()       
 
 

@@ -62,6 +62,10 @@ class BaseDataset(data.Dataset):
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [imageio.imread(i) for i in names]
+            # swap dimensions(channel, height, weight)
+            # print('Shape before:', imgs[0].shape)
+            imgs = [np.ascontiguousarray(np.transpose(x, (2, 0, 1))) for x in imgs]
+            # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)
@@ -86,23 +90,23 @@ class BaseDataset(data.Dataset):
         flipy = random.random() <= 0.5
         transpose = random.random() <= 0.5
 
-        if flipx:
-            img = img[::-1, :, :] # reverse the first dimension using slicing
-        if flipy:
-            img = img[:, ::-1, :]
+        if flipx: # reverse the first dimension using slicing
+            img = img[:, ::-1, :] 
+        if flipy: # reverse the second dimension using slicing
+            img = img[:, :, ::-1]
         if transpose:
-            img = img.transpose(1, 0, 2) # swap x-y aixes
+            img = img.transpose(0, 2, 1) # swap x-y aixes
 
         return np.ascontiguousarray(img)
 
     def get_patch(self, idx):
         img = np.copy(self.images[idx])
-        size_i, size_j = img.shape[:2]
-        
+        size_i, size_j = img.shape[1:3]
         p = self.patch_size
+        # print(p, size_i, size_j)
 
         i = random.randrange(0, size_i - p + 1)
         j = random.randrange(0, size_j - p + 1)
-        img = img[i: i + p, j: j + p, :]
+        img = img[:, i: i + p, j: j + p]
 
         return self.data_augument(img)

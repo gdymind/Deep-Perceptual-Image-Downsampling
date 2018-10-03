@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(description = 'DPID')
 # Hardware specifications
 parser.add_argument('--n_threads', type = int, default = 6,
             help = 'the number of threads for data loading')
-parser.add_argument('--cpu', action = 'store_false',
+parser.add_argument('--cpu', type = bool, default = False,
             help = 'use cpu only')
 parser.add_argument('--n_GPUs', type = int, default = 1,
             help = 'the number of GPU')
@@ -34,7 +34,7 @@ parser.add_argument('--data_range', type = str, default = '1-8/9-16',
 parser.add_argument('--n_channels', type = int, default = 3, # using Lab color space
             help = 'the number of channels')
     # techiniques
-parser.add_argument('--chop', action = 'store_true',
+parser.add_argument('--chop', type = bool, default = True,
             help = 'enable memory-efficient forward')
 
 # Model specifications
@@ -57,7 +57,7 @@ parser.add_argument('--growth_rate', type = int, default = 32,
     # techniques
 parser.add_argument('--shift_mean', default = True,
             help = 'subtract pixel mean from the input')
-parser.add_argument('--dilation', action = 'store_true',
+parser.add_argument('--dilation', type = bool, default = False,
             help = 'use dilated convolution')
 parser.add_argument('--res_scale', type = float, default = 0.1,
             help = 'residual scaling')
@@ -89,19 +89,19 @@ parser.add_argument('--weight_decay', type=float, default=0,
             help='weight decay')
 
 # Training specifications
-parser.add_argument('--reset', action = 'store_true',
+parser.add_argument('--reset', type = bool, default = False,
             help = 'reset the training and start from the very beginning')
 parser.add_argument('--test_every', type = int, default = 1000,
             help = 'do test per every N batches')
 parser.add_argument('--epochs', type = int, default = 300,
             help = 'number of epochs to train')
-parser.add_argument('--batch_size', type = int, default = 16,
+parser.add_argument('--batch_size', type = int, default = 4,
             help = 'input batch size for training')
 parser.add_argument('--split_batch', type = int, default = 1,
             help = 'split the batch into smaller chunks')
-parser.add_argument('--self_ensemble', action = 'store_true',
+parser.add_argument('--self_ensemble', type = bool, default = True,
             help = 'use self-ensemble method for test')
-parser.add_argument('--test_only', action = 'store_true',
+parser.add_argument('--test_only', type = bool, default = True,
             help = 'set this option to test the model')
 parser.add_argument('--gan_k', type = int, default = 1,
             help = 'k value for adversarial loss')
@@ -113,6 +113,7 @@ parser.add_argument('--loss', type = str, default = '1*SSIM',
            help = """set of losses and their parameters.
                Use '+' to split different type of losses,
                and insert '*' between weights and loss_type
+               
                """)
 parser.add_argument('--skip_threshold', type=float, default='1e6',
            help='skipping batch that has large error')
@@ -130,7 +131,7 @@ parser.add_argument('--resume_version', type = str, default = 'X',
                 """)
 parser.add_argument('--print_every', type = int, default = 100,
             help = 'how many batches to wait before logging training status')
-parser.add_argument('--save_results', action = 'store_true',
+parser.add_argument('--save_results', type = bool, default = True,
             help = 'save output results')
 
 args = parser.parse_args()
@@ -141,9 +142,3 @@ if args.dir_log == '@default': # Log files directory: root/Experiment/<model nam
     args.dir_log = os.path.join(args.dir_root, 'Experiment', args.model)
 
 args.scales = list(map(lambda x: int(x), args.scales.split('+')))
-
-for arg in vars(args):
-    if vars(args)[arg] == 'True':
-        vars(args)[arg] = True
-    elif vars(args)[arg] == 'False':
-        vars(args)[arg] == False

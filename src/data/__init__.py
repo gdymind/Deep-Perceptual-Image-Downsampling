@@ -10,10 +10,14 @@ class  Data:
         # load test dataset
         testset = BaseDataset(args, train = False)
         self.loader_test = DataLoader(testset, batch_size = 1,
-            shuffle = False, pin_memory = not args.cpu)
+            shuffle = False, pin_memory = args.cpu)
+        # self.loader_test = MSDataLoader(args, testset, batch_size = 1,
+        #     shuffle = False, pin_memory = not args.cpu)
 
         # load train dataset
         if not args.test_only:
             trainset = BaseDataset(args, train = True)
             self.loader_train = DataLoader(trainset, batch_size = args.batch_size,
-                shuffle = True, pin_memory = not args.cpu)
+                shuffle = True, pin_memory = args.cpu)
+            # self.loader_train = MSDataLoader(args, trainset, batch_size = args.batch_size,
+            #     shuffle = True, pin_memory = not arg.cpu)

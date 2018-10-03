@@ -10,6 +10,8 @@ import trainer
 # ensure that every time you train, the initial parameters are exactly the same
 torch.manual_seed(args.seed)
 
+print('Use {}'.format('CPU' if args.cpu else 'GPU'))
+
 checkpoint = Checkpoint(args)
 loader = data.Data(args)
 model = model.BaseModel(args, checkpoint)

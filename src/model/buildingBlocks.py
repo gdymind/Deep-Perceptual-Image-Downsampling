@@ -66,6 +66,7 @@ class DenseBlock(nn.Module):
         self.conv = CBA_Block(in_channels, growth_rate, kernel_size, stride, bias, act = act)
 
     def forward(self, x):
+        # print('flag')
         out = self.conv(x)
         out = torch.cat((x, out), 1)# the first dimension is the batch index, so we should cat the second dimension
         return out
@@ -78,7 +79,7 @@ class ResDenseBlock(nn.Module):
 
         mDenlist = []
         for i in range(n_dense_layers):
-            mDenlist.append(DenseBlock(in_channels, growth_rate))
+            mDenlist.append(DenseBlock(cur_channels, growth_rate))
             cur_channels += growth_rate
 
         self.DenseLayers = nn.Sequential(*mDenlist)
@@ -86,9 +87,24 @@ class ResDenseBlock(nn.Module):
 
     def forward(self, x):
         out  = self.DenseLayers(x)
-        out = self.Conv1x1(out)
+        out = self.ConvFusion(out)
         out += x
         return out
+
+class CatToLastBlock(nn.Module):
+    def __init__(self, mlist):
+        super(CatToLastBlock, self).__init__()
+        self.mlist = mlist
+
+    def forward(self, x):
+        for i, block in enumerate(self.mlist):
+            x = block(x)
+            if i == 0:
+                out = x
+            else:
+                out = torch.cat((x, out), 1)
+        return out
+
 
 class DownPoolBlock(nn.AvgPool2d):
     def __init__(self, scale):
@@ -96,6 +112,4 @@ class DownPoolBlock(nn.AvgPool2d):
 
 class DownConvBlock(nn.Conv2d):
     def __init__(self, in_channels, scale):
-        super(DownConvBlock, self).__init__(in_channels, 1, kernel_size = scale, stride = scale,
-            padding = 0, bias = True)
-        
+        super(DownConvBlock, self).__init__(in_channels, 1, kernel_size = scale, stride = scale, padding = 0, bias = True)

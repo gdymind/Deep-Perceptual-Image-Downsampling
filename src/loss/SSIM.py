@@ -13,7 +13,6 @@ class SSIM(nn.Module):
         self.size_average = size_average
         self.window = self._create_weights(window_size, n_channel)
         self.window.to(device)
-        
 
     def forward(self, img1, img2):
         n_channel = img1.size()[1]

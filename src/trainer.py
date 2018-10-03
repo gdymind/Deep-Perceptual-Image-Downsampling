@@ -2,6 +2,7 @@ import os
 import math
 import numpy as np
 import scipy.misc as misc
+from tqdm import tqdm
 
 import torch
 import torch.optim as optim
@@ -11,6 +12,8 @@ class Trainer():
     def __init__(self, args, loader, my_model, loss, ckp):
         self.args = args
         self.scales = args.scales
+        self.cur_scale = self.scales[0]# current scale
+        self.device = torch.device('cpu' if self.args.cpu else 'cuda')
 
         self.loader_train = loader.loader_train
         self.loader_test = loader.loader_test
@@ -18,6 +21,7 @@ class Trainer():
         self.loss = loss
         self.ckp = ckp
         self.dir = os.path.join(args.dir_root, 'optimizer')
+
 
         self.load_optimizer(args.resume_version)
         self.scheduler = self._create_scheduler(self.args, self.optimizer)
@@ -77,10 +81,10 @@ class Trainer():
             self.optimizer = self._create_optimizer(self.args, self.model)
 
 
-    def convert_tensor_device(self, *tensors):
-        device = torch.device('cpu' if self.args.cpu else 'cuda')
+    # def convert_tensor_device(self, *tensors):
+    #     device = torch.device('cpu' if self.args.cpu else 'cuda')
 
-        return [t.to(device) for tensor in tensors]
+    #     return [t.to(device) for t in tensors]
 
     def should_terminate(self):
         if self.args.test_only:
@@ -108,15 +112,12 @@ class Trainer():
         # timer_data, timer_model = utility.timer(), utility.timer()
 
         for batch, img in enumerate(self.loader_train):
-            img = self.convert_tensor_device(img)
-
             # timer_data.hold()
             # timer_model.tic()
 
             self.optimizer.zero_grad()
-            img_down = self.model(img, self.scale)
+            img_down = self.model(img)
             loss = self.loss(img, img_down)
-
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
                 self.optimizer.step()
@@ -153,7 +154,7 @@ class Trainer():
 
         # timer_test = utility.timer()
         with torch.no_grad():
-            self.loader_test.set_scale(self.scale)
+            # self.loader_test.set_scale(self.scale)
             tqdm_test = tqdm(self.loader_test) # show progress bar
             for i, img in enumerate(tqdm_test):
                 filename = 'hahaha'
@@ -161,7 +162,6 @@ class Trainer():
                     get filename
                 """
 
-                self.convert_tensor_device()
                 img_down = self.model(img)
                 img_down = img.clamp(0, 255)
 

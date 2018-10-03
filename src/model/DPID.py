@@ -13,6 +13,8 @@ class  DPID(nn.Module):
         super(DPID, self).__init__()
 
         self.scales = args.scales
+        self.cur_scale = self.scales[0]# current scale
+        self.device = torch.device('cpu' if args.cpu else 'cuda')
 
         n_channels = args.n_channels
         n_shallow_feature = args.n_shallow_feature
@@ -24,15 +26,16 @@ class  DPID(nn.Module):
 
         # shallow feature extraction (SFE)
         mlist = []
-        mlist.append(ConvHalfPad(n_channels, n_shallow_feature))
-        mlist.append(ConvHalfPad(n_shallow_feature, n_shallow_feature))
+        mlist.append(ConvHalfPad(n_channels, n_feature))
+        mlist.append(ConvHalfPad(n_feature, n_feature))
         self.SFE = nn.Sequential(*mlist)
 
         # ResDenseBlocks
         mlist = []
+        # mlist.append(ResDenseBlock(n_feature, growth_rate, n_dense_layer))
         for i in range(n_ResDenseBlock):
-            mlist.append(ResDenseBlock(n_shallow_feature, growth_rate, n_dense_layer))
-        self.ResDenseBlocks = nn.Sequential(*mlist)
+            mlist.append(ResDenseBlock(n_feature, growth_rate, n_dense_layer).to(self.device))
+        self.ResDenseBlocks = CatToLastBlock(mlist)
 
         # global feature fusion (GFF)
         mlist = []
@@ -42,13 +45,19 @@ class  DPID(nn.Module):
 
         # down scaling
         mlist = []
-        mlist.append(DownConvBlock(n_feature, self.scales))
+        # mlist.append(DownConvBlock(n_feature, self.scales))
+        mlist.append(DownConvBlock(n_feature, self.cur_scale))
         self.Down = nn.Sequential(*mlist)
 
     def forward(self, x):
-        out = self.SFE(x)
-        out = self.ResDenseBlocks(out)
-        out = self.GFF(out)
-        out = self.Down(out)
+        # print('Shape input:', x.size())
+        x = self.SFE(x)
+        # print('Shape SFE:', x.size())
+        x = self.ResDenseBlocks(x)
+        # print('Shape ResDense:', x.size())
+        x = self.GFF(x)
+        # print('Shape GFF:', x.size())
+        x = self.Down(x)
+        # print('Shape Down:', x.size())
 
-        return out
+        return x

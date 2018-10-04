@@ -23,6 +23,7 @@ class Trainer():
         self.loss = loss
         self.ckp = ckp
         self.dir = os.path.join(args.dir_root, 'optimizer')
+        self.dir_log = self.ckp.dir
 
 
         self.load_optimizer(args.resume_version)
@@ -90,7 +91,7 @@ class Trainer():
 
     def should_terminate(self):
         if self.args.test_only:
-            self.test()
+            self.test(True)
             return True
         else:
             return self.scheduler.last_epoch + 1 >= self.args.epochs
@@ -141,12 +142,14 @@ class Trainer():
             # timer_data.tic()
 
 
-    def test(self):
-        def save_result_imgs(self, filename, save_list, scale):
-            filename = os.path.join(self.dir_log, 'results', '{}x{}'.format(filename, scale))
-            for img in save_list:
-                ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy()
-                misc.imsave('{}.png'.format(filename), ndarr)
+    def test(self, save_results = False):
+        def save_result_imgs(filename, img, scale):
+            apath = os.path.join(self.dir_log, 'results')
+            os.makedirs(apath, exist_ok = True)
+            filename = os.path.join(apath, '{}x{}'.format(filename, scale))
+            print('img path:', filename)
+            ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy()
+            misc.imsave('{}.png'.format(filename), ndarr)
 
         self.model.eval() # set test mode
         epoch = self.scheduler.last_epoch + 1
@@ -168,10 +171,10 @@ class Trainer():
                 img_down = img.clamp(0, 255)
 
 
-                save_list = [img_down, img]
+                print('img_down size: {}'.format(img_down.size(),))
 
-                # if self.args.save_results:
-                #         self.ckp.save_results(filename, save_list, scale)
+                if save_results:
+                    save_result_imgs(filename, img_down.squeeze(0), self.cur_scale)
 
                 # self.ckp.log[-1, idx_scale] = eval_acc / len(self.loader_test)
                 # best = self.ckp.log.max(0)
@@ -185,6 +188,6 @@ class Trainer():
                 #     )
                 # )
 
-        self.ckp.save_log_txt('Total time: {:.2f}s\n'.format(timer_test.toc()))
+        self.ckp.save_log_txt('Test total time: {:.2f}s\n'.format(timer_test.toc()))
         # if not self.args.test_only:
         #     self.ckp.save(self, epoch, is_best=(best[1][0] + 1 == epoch))

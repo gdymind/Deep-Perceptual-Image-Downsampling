@@ -131,8 +131,6 @@ parser.add_argument('--resume_version', type = str, default = 'X',
                 """)
 parser.add_argument('--print_every', type = int, default = 100,
             help = 'how many batches to wait before logging training status')
-parser.add_argument('--save_results', type = bool, default = True,
-            help = 'save output results')
 
 args = parser.parse_args()
 

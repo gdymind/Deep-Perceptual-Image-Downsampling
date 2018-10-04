@@ -53,7 +53,10 @@ class BaseDataset(data.Dataset):
 
 
     def __getitem__(self, idx):
-        return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
+        if self.train:
+            return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
+        else:
+            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), idx]
 
     def _load_bin(self, names, path_bin):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -109,4 +112,22 @@ class BaseDataset(data.Dataset):
         j = random.randrange(0, size_j - p + 1)
         img = img[:, i: i + p, j: j + p]
 
-        return self.data_augument(img)
+        if self.train:
+            img = self.data_augument(img)
+
+        return img
+        # if self.train:
+        #     size_i, size_j = img.shape[1:3]
+        #     p = self.patch_size
+        #     # print(p, size_i, size_j)
+
+        #     i = random.randrange(0, size_i - p + 1)
+        #     j = random.randrange(0, size_j - p + 1)
+        #     img = img[:, i: i + p, j: j + p]
+
+        #     return self.data_augument(img)
+        # else:
+        #     return img
+        #     img = img[:, :, :]
+
+        #     return self.data_augument(img)

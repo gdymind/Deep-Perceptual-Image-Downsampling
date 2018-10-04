@@ -8,6 +8,8 @@ import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
 
+from utility.timer import *
+
 class Trainer():
     def __init__(self, args, loader, my_model, loss, ckp):
         self.args = args
@@ -152,7 +154,7 @@ class Trainer():
         # self.ckp.write_log('\nEvaluation:')
         # self.ckp.add_log(torch.zeros(1, len(self.scale)))
 
-        # timer_test = utility.timer()
+        timer_test = Timer()
         with torch.no_grad():
             # self.loader_test.set_scale(self.scale)
             tqdm_test = tqdm(self.loader_test) # show progress bar
@@ -183,8 +185,6 @@ class Trainer():
                 #     )
                 # )
 
-        # self.ckp.write_log(
-        #     'Total time: {:.2f}s\n'.format(timer_test.toc()), refresh=True
-        # )
+        self.ckp.save_log_txt('Total time: {:.2f}s\n'.format(timer_test.toc()))
         # if not self.args.test_only:
         #     self.ckp.save(self, epoch, is_best=(best[1][0] + 1 == epoch))

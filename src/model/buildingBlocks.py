@@ -112,4 +112,4 @@ class DownPoolBlock(nn.AvgPool2d):
 
 class DownConvBlock(nn.Conv2d):
     def __init__(self, in_channels, scale):
-        super(DownConvBlock, self).__init__(in_channels, 1, kernel_size = scale, stride = scale, padding = 0, bias = True)
+        super(DownConvBlock, self).__init__(in_channels, 3, kernel_size = scale, stride = scale, padding = 0, bias = True)

@@ -148,7 +148,7 @@ class Trainer():
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, '{}x{}'.format(filename, scale))
             print('img path:', filename)
-            ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy()
+            ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy().astype(int)
             misc.imsave('{}.png'.format(filename), ndarr)
 
         self.model.eval() # set test mode
@@ -161,20 +161,20 @@ class Trainer():
         with torch.no_grad():
             # self.loader_test.set_scale(self.scale)
             tqdm_test = tqdm(self.loader_test) # show progress bar
-            for i, img in enumerate(tqdm_test):
-                filename = 'hahaha'
-                """to do
-                    get filename
-                """
+            for i, data in enumerate(tqdm_test):
+                img = data[0]
+                filename = str(data[1].numpy()[0])
+                if len(filename) < 4:
+                    filename = ('0' * (4 - len(filename))) + filename
+                print(filename)
 
-                img_down = self.model(img)
-                img_down = img.clamp(0, 255)
-
-
-                print('img_down size: {}'.format(img_down.size(),))
+                img_down = self.model(img).squeeze(0)
+                print('img_down max', img_down.max())
+                img_down = img_down.clamp(0, 1)
+                img_down *= 255
 
                 if save_results:
-                    save_result_imgs(filename, img_down.squeeze(0), self.cur_scale)
+                    save_result_imgs(filename, img_down, self.cur_scale)
 
                 # self.ckp.log[-1, idx_scale] = eval_acc / len(self.loader_test)
                 # best = self.ckp.log.max(0)

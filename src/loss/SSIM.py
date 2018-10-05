@@ -80,7 +80,7 @@ class SSIM(nn.Module):
         #                     for m2 in range(self.cur_scale):
         #                         imgs3[i][j][k + m1][l + m2] = imgs2[i][j][k][l]
         # imgs2 = imgs3.to(torch.device('cuda'))
-        imgs2 = self.upscale_imgs(imgs2, self.cur_scale)
+        # imgs2 = self.upscale_imgs(imgs2, self.cur_scale)
         # print('imgs2 size:', imgs2.size())
 
         # mu is luminance, which is estimated as the mean intensity

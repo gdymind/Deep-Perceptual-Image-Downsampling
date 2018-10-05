@@ -29,7 +29,7 @@ parser.add_argument('--dir_log', type = str, default = '@default',
     # dataset
 parser.add_argument('--data_name', type = str, default = 'DIV2K',
             help = 'dataset name')
-parser.add_argument('--data_range', type = str, default = '1-8/9-9',
+parser.add_argument('--data_range', type = str, default = '9-9/9-9',
             help = 'train/test data range')
 parser.add_argument('--n_channels', type = int, default = 3, # using Lab color space
             help = 'the number of channels')
@@ -66,9 +66,9 @@ parser.add_argument('--precision', type=str, default='single',
             help='FP precision for test (single | half)')
 
 # Optimization specifications
-parser.add_argument('--lr', type=float, default=1e-4,
+parser.add_argument('--lr', type=float, default=1e-3,
             help='learning rate')
-parser.add_argument('--lr_decay', type=int, default=200,
+parser.add_argument('--lr_decay', type=int, default=100,
             help='learning rate decay per N epochs')
 parser.add_argument('--decay_type', type=str, default='step',
             help='learning rate decay type')
@@ -91,9 +91,9 @@ parser.add_argument('--weight_decay', type=float, default=0,
 # Training specifications
 parser.add_argument('--reset', type = bool, default = False,
             help = 'reset the training and start from the very beginning')
-parser.add_argument('--test_every', type = int, default = 1000,
+parser.add_argument('--test_every', type = int, default = 1000000,
             help = 'do test per every N batches')
-parser.add_argument('--epochs', type = int, default = 300,
+parser.add_argument('--epochs', type = int, default = 1000,
             help = 'number of epochs to train')
 parser.add_argument('--batch_size', type = int, default = 4,
             help = 'input batch size for training')
@@ -109,7 +109,7 @@ parser.add_argument('--patch_size', type = int, default = 256,
             help = 'output patch size')
 
 # Loss specifications
-parser.add_argument('--loss', type = str, default = '1*SSIM',
+parser.add_argument('--loss', type = str, default = '1*MSE+1000*SSIM',
            help = """set of losses and their parameters.
                Use '+' to split different type of losses,
                and insert '*' between weights and loss_type

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.modules as modules
+from torch.nn import MSELoss
 
 
 class Loss(modules.loss._Loss):
@@ -95,6 +96,8 @@ class Loss(modules.loss._Loss):
                 if loss_type.find("SSIM") >= 0:
                     module = import_module('loss.SSIM')
                     loss_function = getattr(module, 'SSIM')(args).to(self.device)
+                elif loss_type.find("MSE") >= 0:
+                    loss_function = MSELoss()                    
                 else:
                     pass
 

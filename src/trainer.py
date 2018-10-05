@@ -97,6 +97,23 @@ class Trainer():
         else:
             return self.scheduler.last_epoch + 1 >= self.args.epochs
 
+    def upscale_imgs(self, imgs, scale):
+        #batch, channel, height, width
+        n, c, h, w = imgs.size()
+        # print('a', imgs.size())
+        imgs = imgs.view(n, c, h * w, 1).contiguous()
+        # print('b', imgs.size())
+        imgs = imgs.repeat(1, 1, 1, scale * scale).contiguous()
+        # print('c', imgs.size())
+        imgs = imgs.view(n, c, h, w, scale, scale).contiguous()
+        # print('d', imgs.size())
+        imgs = imgs.permute(0, 1, 2, 4, 3, 5).contiguous()
+        # print('e', imgs.size())
+        imgs = imgs.view(n, c, h * scale, w * scale).contiguous()
+        # print('f', imgs.size())
+
+        return imgs
+
     def train(self):
         self.model.train(True)
 
@@ -121,8 +138,9 @@ class Trainer():
             timer_model.tic()
             self.optimizer.zero_grad()
             img_down = self.model(img)
+            img_up = self.upscale_imgs(img_down, self.cur_scale)
             # print('img_down.size() =', img_down.size())
-            loss = self.loss(img, img_down)
+            loss = self.loss(img, img_up)
             print('loss =', loss)
 
             if loss.item() < self.args.skip_threshold * self.error_last:

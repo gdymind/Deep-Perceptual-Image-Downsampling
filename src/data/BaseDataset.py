@@ -110,6 +110,9 @@ class BaseDataset(data.Dataset):
 
         i = random.randrange(0, size_i - p + 1)
         j = random.randrange(0, size_j - p + 1)
+        if not self.train:
+            i = 0
+            j = 0
         img = img[:, i: i + p, j: j + p]
 
         if self.train:

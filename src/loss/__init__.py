@@ -23,17 +23,19 @@ class Loss(modules.loss._Loss):
 
 
     def forward(self, img_down, img):
+        if self.log.size()[0] > 1:
+            self.log.append(torch.zeros(1, len(self.loss)))
         losses = []
         for i, l in enumerate(self.loss):
-            if l['funciton'] is not None:
+            if l['function'] is not None:
                 loss = l['function'](img_down, img)
                 effective_loss = l['weight'] * loss
                 losses.append(effective_loss)
-                self.log[-1, i] += effective_loss.item()
+                self.log[-1][i] = effective_loss.item()
 
         loss_sum = sum(losses)
         if len(self.loss) > 1:
-            self.log[-1, -1] += loss_sum.item()
+            self.log[-1][-1] += loss_sum.item()
 
         return loss_sum
 
@@ -44,11 +46,11 @@ class Loss(modules.loss._Loss):
             else:
                 print('no scheduler for', l)
 
-    def start_log(self):
-        self.log.cat_(torch.zeros(1, len(self.loss)))
+    # def start_log(self):
+    #     self.log.cat_(torch.zeros(1, len(self.loss)))
 
-    def end_log(self, n_batches):
-        self.log[-1].div_(n_batches)
+    # def end_log(self, n_batches):
+    #     self.log[-1].div_(n_batches)
 
     def get_loss_module(self):
         if self.n_GPUs == 1:
@@ -92,7 +94,7 @@ class Loss(modules.loss._Loss):
 
                 if loss_type.find("SSIM") >= 0:
                     module = import_module('loss.SSIM')
-                    loss_function = getattr(module, 'SSIM')()
+                    loss_function = getattr(module, 'SSIM')(args).to(self.device)
                 else:
                     pass
 
@@ -114,7 +116,7 @@ class Loss(modules.loss._Loss):
                     print('{:.3f} * {}'.format(l['weight'], l['type']))
                     self.loss_module.append(l['function'])
 
-            self.log = torch.Tensor()
+            self.log = torch.Tensor(size = [1, len(self.loss)])
             self.log.to(self.device)
             self.loss_module.to(self.device)
 

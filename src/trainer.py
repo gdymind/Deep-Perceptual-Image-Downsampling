@@ -3,6 +3,7 @@ import math
 import numpy as np
 import scipy.misc as misc
 from tqdm import tqdm
+from decimal import Decimal
 
 import torch
 import torch.optim as optim
@@ -42,26 +43,26 @@ class Trainer():
         """
 
 
-    def _create_optimizer(self, args, model):
-        trainable = filter(lambda x: x.requires_grad, model.parameters())
+    def _create_optimizer(self, args, my_model):
+        trainable = filter(lambda x: x.requires_grad, my_model.parameters())
 
         if args.optimizer == 'SGD':
-            opt_algorithm = optim.SGD
-            opt_args = {'momentum': args.momentum}
+            optimizer_function = optim.SGD
+            kwargs = {'momentum': args.momentum}
         elif args.optimizer == 'ADAM':
-            opt_algorithm = optim.Adam
-            opt_args = {
+            optimizer_function = optim.Adam
+            kwargs = {
                 'betas': (args.beta1, args.beta2),
                 'eps': args.epsilon
             }
-        elif ars.optimizer == 'RMSprop':
-            opt_algorithm = optim.RMSprop
-            opt_args = {'eps': args.epsilon}
+        elif args.optimizer == 'RMSprop':
+            optimizer_function = optim.RMSprop
+            kwargs = {'eps': args.epsilon}
 
-        opt_args['lr'] = args.lr
-        opt_args['weight_decay'] = args.weight_decay
-
-        return opt_algorithm(trainable, **opt_args)
+        kwargs['lr'] = args.lr
+        kwargs['weight_decay'] = args.weight_decay
+        
+        return optimizer_function(trainable, **kwargs)
 
     def _create_scheduler(self, args, optimizer):
         if args.decay_type == 'step':
@@ -103,33 +104,37 @@ class Trainer():
         self.loss.step()
         epoch = self.scheduler.last_epoch + 1
 
-        #lr = self.scheduler.get_lr()[0]
-        """to do
-        self.ckp.write_log(
-            '[Epoch {}]\tLearning rate: {:.2e}'.format(epoch, Decimal(lr))
-        )
-        self.loss.start_log()
-        """
+        lr = self.scheduler.get_lr()[0]
 
+        self.ckp.save_log_txt('[Epoch {}] Learning rate: {:.2e}'.format(epoch, Decimal(lr)))
+        # self.loss.start_log()
 
-        # timer_data, timer_model = utility.timer(), utility.timer()
+        timer_data, timer_model = Timer(), Timer()
+
+        # timer_data.tic()
 
         for batch, img in enumerate(self.loader_train):
             # timer_data.hold()
-            # timer_model.tic()
-
+            # print('batch {} load time: {}'.format(batch, timer_data.toc()))
+            print('batch {} starts'.format(batch))
+            # print('img size:', img.size())
+            timer_model.tic()
             self.optimizer.zero_grad()
             img_down = self.model(img)
+            # print('img_down.size() =', img_down.size())
             loss = self.loss(img, img_down)
+            print('loss =', loss)
+
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
                 self.optimizer.step()
-
             else:
                 print('Skip batch {}. (Loss = {})'.format(
                         batch + 1))
+            print('batch {} ends'.format(batch))
 
             # timer_model.hold()
+            print('time: ', timer_model.toc())
 
             # if (batch + 1) % self.args.print_every == 0:
             #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(
@@ -166,10 +171,10 @@ class Trainer():
                 filename = str(data[1].numpy()[0])
                 if len(filename) < 4:
                     filename = ('0' * (4 - len(filename))) + filename
-                print(filename)
+                # print(filename)
 
                 img_down = self.model(img).squeeze(0)
-                print('img_down max', img_down.max())
+                # print('img_down max', img_down.max())
                 img_down = img_down.clamp(0, 1)
                 img_down *= 255
 

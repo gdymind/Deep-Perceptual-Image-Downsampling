@@ -20,6 +20,6 @@ trainer = trainer.Trainer(args, loader, model, loss, checkpoint)
 
 while not trainer.should_terminate():
     trainer.train()
-    trainer.test()
+    trainer.test(True)
 
 print("The whole program has exited.")

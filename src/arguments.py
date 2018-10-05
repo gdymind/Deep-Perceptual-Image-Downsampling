@@ -29,7 +29,7 @@ parser.add_argument('--dir_log', type = str, default = '@default',
     # dataset
 parser.add_argument('--data_name', type = str, default = 'DIV2K',
             help = 'dataset name')
-parser.add_argument('--data_range', type = str, default = '1-8/9-16',
+parser.add_argument('--data_range', type = str, default = '1-8/9-9',
             help = 'train/test data range')
 parser.add_argument('--n_channels', type = int, default = 3, # using Lab color space
             help = 'the number of channels')
@@ -101,7 +101,7 @@ parser.add_argument('--split_batch', type = int, default = 1,
             help = 'split the batch into smaller chunks')
 parser.add_argument('--self_ensemble', type = bool, default = True,
             help = 'use self-ensemble method for test')
-parser.add_argument('--test_only', type = bool, default = True,
+parser.add_argument('--test_only', type = bool, default = False,
             help = 'set this option to test the model')
 parser.add_argument('--gan_k', type = int, default = 1,
             help = 'k value for adversarial loss')

@@ -113,7 +113,8 @@ class BaseDataset(data.Dataset):
         if not self.train:
             i = 0
             j = 0
-        img = img[:, i: i + p, j: j + p]
+        if self.train:
+            img = img[:, i: i + p, j: j + p]
 
         if self.train:
             img = self.data_augument(img)

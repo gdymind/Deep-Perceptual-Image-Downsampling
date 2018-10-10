@@ -107,12 +107,12 @@ class Loss(modules.loss._Loss):
                     'function': loss_function
                     })
 
-            if len(self.loss) > 1:
-                self.loss.append({
-                    'type': 'Total',
-                    'weight': 0,
-                    'function': None
-                    })
+            # if len(self.loss) > 1:
+            #     self.loss.append({
+            #         'type': 'Total',
+            #         'weight': 0,
+            #         'function': None
+            #         })
 
             for l in self.loss:
                 if l['function'] is not None:

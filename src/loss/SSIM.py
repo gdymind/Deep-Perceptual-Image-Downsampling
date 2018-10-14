@@ -9,7 +9,7 @@ from math import exp
 class SSIM(nn.Module):
     def __init__(self, args, window_size = 11, n_channel = 3, size_average = True):
         super(SSIM, self).__init__()
-        
+
         self.window_size = window_size
         self.size_average = size_average
         self.device = torch.device('cpu' if args.cpu else 'cuda')

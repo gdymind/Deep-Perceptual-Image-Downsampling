@@ -29,7 +29,7 @@ class BaseDataset(data.Dataset):
             fileIdx = fileIdx[-1]
         fileIdx = [int(x) for x in fileIdx]
 
-        # set path                
+        # set path
         path_root = os.path.join(args.dir_data, self.name)
         path_bin = os.path.join(path_root, 'bin')
         os.makedirs(path_bin, exist_ok = True)
@@ -62,6 +62,7 @@ class BaseDataset(data.Dataset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
         #make_bin = (bin_number == len(names))
         make_bin = not os.path.isfile(path_bin)
+        make_bin = make_bin or self.args.reset
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [imageio.imread(i) for i in names]

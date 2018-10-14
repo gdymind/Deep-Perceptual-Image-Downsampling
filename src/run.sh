@@ -1,1 +1,1 @@
-python main.py --loss 1*SSIM --n_shallow_feature 8 --n_feature 8 --growth_rate 8 --data_range 2-2/2-2 --epochs 2000
+python main.py --loss 1*SSIM --n_shallow_feature 8 --n_feature 8 --growth_rate 8 --data_range 2-2/2-2 --epochs 2000 --reset y

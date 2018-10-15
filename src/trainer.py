@@ -10,6 +10,7 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
 
 from utility.timer import *
+from utility import *
 
 class Trainer():
     def __init__(self, args, loader, my_model, loss, ckp):
@@ -171,11 +172,12 @@ class Trainer():
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, '{}x{}'.format(filename, scale))
             print('img path:', filename)
-            ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy().astype(int)
+            ndarr = img.data.byte().cpu().numpy()
             # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
             # recover img
             for i, data in enumerate(ndarr):
-                ndarr[i] = (data - imgGlobalRange[i]) / imgGlobalStd[i]
+                ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
+            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
             misc.imsave('{}.png'.format(filename), ndarr)
 
         self.model.eval() # set test mode

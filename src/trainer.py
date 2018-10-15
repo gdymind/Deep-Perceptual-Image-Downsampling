@@ -198,9 +198,12 @@ class Trainer():
                 # print(filename)
 
                 img_down = self.model(img).squeeze(0)
-                # print('img_down max', img_down.max())
-                img_down = img_down.clamp(0, 1)
-                img_down *= 255
+                # print('img size', img_down.size())
+                # print('img_down max', img_down[0].mean())
+                # print('img_down max', img_down[1].mean())
+                # print('img_down max', img_down[2].mean())
+                # img_down = img_down.clamp(0, 1)
+                # img_down *= 255
 
                 if save_results:
                     save_result_imgs(filename, img_down, self.cur_scale)

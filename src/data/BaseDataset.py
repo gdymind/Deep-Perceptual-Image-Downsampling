@@ -74,7 +74,7 @@ class BaseDataset(data.Dataset):
             # pre-process
             for img in imgs:
                 for i, data in enumerate(img):
-                    img[i] = (data - imgGlobalRange[i]) / imgGlobalStd[i]
+                    img[i] = (data.float() - imgGlobalRange[i]) / imgGlobalStd[i]
             # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:

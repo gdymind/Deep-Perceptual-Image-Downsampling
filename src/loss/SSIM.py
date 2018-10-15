@@ -61,30 +61,7 @@ class SSIM(nn.Module):
 
 
     def _calc_ssim(self, imgs1, imgs2, window, window_size, n_channel, C1 = 0, C2 = 0, size_average = True):
-        # upsample imgs2
-        # transfom = transforms.Compose([
-        #     transforms.ToPILImage()#,
-        #     #transforms.Resize([imgs1.size()[2], imgs1.size()[3]]),
-        #     #transforms.ToTensor()
-        #     ])
-        # imgs2 = [transfom(img) for img in imgs2]
-        # print('upsample starts')
-        sz = imgs2.size()
-
-        # imgs3 = imgs1.clone()
-        # for i in range(sz[0]):
-        #     for j in range(sz[1]):
-        #         for k in range(sz[2]):
-        #             for l in range(sz[3]):
-        #                  for m1 in range(self.cur_scale):
-        #                     for m2 in range(self.cur_scale):
-        #                         imgs3[i][j][k + m1][l + m2] = imgs2[i][j][k][l]
-        # imgs2 = imgs3.to(torch.device('cuda'))
-        # imgs2 = self.upscale_imgs(imgs2, self.cur_scale)
-        # print('imgs2 size:', imgs2.size())
-
         # mu is luminance, which is estimated as the mean intensity
-
         # for img1, img2 in zip(img_batch1, img_batch2):
         mu1 = F.conv2d(imgs1, window, groups = n_channel)
         mu2 = F.conv2d(imgs2, window, groups = n_channel)

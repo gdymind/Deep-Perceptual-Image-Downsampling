@@ -97,7 +97,7 @@ class Loss(modules.loss._Loss):
                     module = import_module('loss.SSIM')
                     loss_function = getattr(module, 'SSIM')(args).to(self.device)
                 elif loss_type.find("MSE") >= 0:
-                    loss_function = MSELoss()                    
+                    loss_function = MSELoss()
                 else:
                     pass
 
@@ -137,4 +137,3 @@ class Loss(modules.loss._Loss):
     def save(self, epoch):
         torch.save(self.state_dict(), os.path.join(self.dir, 'loss_{}.pt'.format(epoch)))
         torch.save(self.log, os.path.join(self.dir, 'loss_log_{}.pt'.format(epoch)))
-

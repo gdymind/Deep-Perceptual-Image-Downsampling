@@ -41,7 +41,7 @@ class BaseModel(nn.Module):
             resume_file = os.path.join(self.dir, 'model_{}.pt'.format(version))
             self.load_state_dict(
                 torch.load(resume_file, map_location = self.device))
-            
+
     def save(self, epoch, is_best = False):
         sd = self.model.state_dict()
 
@@ -50,7 +50,7 @@ class BaseModel(nn.Module):
             os.path.join(self.dir, 'model_{}.pt'.format(epoch)))
 
         torch.save(
-            sd, 
+            sd,
             os.path.join(self.dir, 'model_latest.pt'))
 
         if is_best:
@@ -65,7 +65,7 @@ class BaseModel(nn.Module):
             return self.model.module
 
     def forward(self, x):
-        target = self.get_model()       
+        target = self.get_model()
 
 
         # if self.self_ensemble and not self.training:

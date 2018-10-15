@@ -10,6 +10,8 @@ from skimage.viewer import ImageViewer
 import torch
 import torch.utils.data as data
 
+from utility import *
+
 class BaseDataset(data.Dataset):
     def __init__(self, args, name = "DIV2K", train = True):
         self.args = args
@@ -55,7 +57,7 @@ class BaseDataset(data.Dataset):
     def __getitem__(self, idx):
         if self.train:
             return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
-        else:
+        else: # return idx to set filename
             return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), idx]
 
     def _load_bin(self, names, path_bin):
@@ -69,6 +71,10 @@ class BaseDataset(data.Dataset):
             # swap dimensions(channel, height, weight)
             # print('Shape before:', imgs[0].shape)
             imgs = [np.ascontiguousarray(np.transpose(x, (2, 0, 1))) for x in imgs]
+            # pre-process
+            for img in imgs:
+                for i, data in enumerate(img):
+                    img[i] = (data - imgGlobalRange[i]) / imgGlobalStd[i]
             # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:

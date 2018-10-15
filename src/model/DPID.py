@@ -25,10 +25,10 @@ class  DPID(nn.Module):
         n_dense_layer = args.n_dense_layer
         growth_rate = args.growth_rate
 
-        mean = (0.4488, 0.4371, 0.4040)
-        std = (1.0, 1.0, 1.0)
+        # mean = (0.4488, 0.4371, 0.4040)
+        # std = (1.0, 1.0, 1.0)
 
-        self.SubMean = MeanShift(mean, std, True)
+        # self.SubMean = MeanShift(mean, std, True)
 
         # shallow feature extraction (SFE)
         mlist = []
@@ -55,10 +55,10 @@ class  DPID(nn.Module):
         mlist.append(DownConvBlock(n_feature, self.cur_scale))
         self.Down = nn.Sequential(*mlist)
 
-        self.AddMean = MeanShift(mean, std, False)
+        # self.AddMean = MeanShift(mean, std, False)
 
     def forward(self, x):
-        x = self.SubMean(x)
+        # x = self.SubMean(x)
         # print('Shape input:', x.size())
         x = self.SFE(x)
         # print('Shape SFE:', x.size())
@@ -68,6 +68,6 @@ class  DPID(nn.Module):
         # print('Shape GFF:', x.size())
         x = self.Down(x)
         # print('Shape Down:', x.size())
-        x = self.AddMean(x)
+        # x = self.AddMean(x)
 
         return x

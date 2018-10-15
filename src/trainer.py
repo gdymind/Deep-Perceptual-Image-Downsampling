@@ -32,7 +32,7 @@ class Trainer():
 
         self.error_last = 1e8 # error in the last step
 
-        # to do: load 
+        # to do: load
 
         """
                 if self.args.load != '.':
@@ -61,7 +61,7 @@ class Trainer():
 
         kwargs['lr'] = args.lr
         kwargs['weight_decay'] = args.weight_decay
-        
+
         return optimizer_function(trainable, **kwargs)
 
     def _create_scheduler(self, args, optimizer):
@@ -172,6 +172,10 @@ class Trainer():
             filename = os.path.join(apath, '{}x{}'.format(filename, scale))
             print('img path:', filename)
             ndarr = img.data.byte().permute(1, 2, 0).cpu().numpy().astype(int)
+            # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
+            # recover img
+            for i, data in enumerate(ndarr):
+                ndarr[i] = (data - imgGlobalRange[i]) / imgGlobalStd[i]
             misc.imsave('{}.png'.format(filename), ndarr)
 
         self.model.eval() # set test mode

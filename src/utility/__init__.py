@@ -4,6 +4,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+imgGlobalRange = 255.0
+imgGlobalMean = (0.4488 * imgGlobalRange, 0.4371 * imgGlobalRange, 0.4040 * imgGlobalRange)
+imgGlobalStd = (1.0, 1.0, 1.0)
+
 # add mean or substract mean, then divided by std
 class MeanShift(nn.Conv2d):
     def __init__(self, mean, std, forward = True, data_range = 256):

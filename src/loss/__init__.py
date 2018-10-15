@@ -97,7 +97,11 @@ class Loss(modules.loss._Loss):
                     module = import_module('loss.SSIM')
                     loss_function = getattr(module, 'SSIM')(args).to(self.device)
                 elif loss_type.find("MSE") >= 0:
+<<<<<<< HEAD
                     loss_function = MSELoss()
+=======
+                    loss_function = MSELoss(reduction = 'elementwise_mean')                    
+>>>>>>> b94241d126a60fa9d61bdda16c5a0ede6733c9ec
                 else:
                     pass
 

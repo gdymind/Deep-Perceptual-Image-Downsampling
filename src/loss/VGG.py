@@ -4,7 +4,7 @@ import torchvision.models as models
 from utility import *
 
 class VGG(nn.Module):
-    def __init__(self, conv_index, data_range = 1):
+    def __init__(self, conv_index = '54', data_range = 1):
         super(VGG, self).__init__()
         vgg_features = models.vgg19(pretrained = True).features
         mlist = [m for m in vgg_features]

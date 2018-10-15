@@ -98,6 +98,9 @@ class Loss(modules.loss._Loss):
                     loss_function = getattr(module, 'SSIM')(args).to(self.device)
                 elif loss_type.find("MSE") >= 0:
                     loss_function = MSELoss()
+                elif loss_type.find("VGG") >= 0:
+                    module = import_module('loss.VGG')
+                    loss_function = getattr(module, 'VGG')().to(self.device)
                 else:
                     pass
 

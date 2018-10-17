@@ -12,7 +12,7 @@ class Checkpoint():
 
         self.dir = os.path.join(args.dir_log, args.log_name)
         self.dir_model = os.path.join(self.dir, "model")
-        self.dir_result = os.path.join(self.dir, "result")
+        self.dir_result = os.path.join(self.dir, "results")
 
         if args.reset:
             os.system("rm -rf " + self.dir)

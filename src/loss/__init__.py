@@ -39,7 +39,7 @@ class Loss(modules.loss._Loss):
         if len(self.loss) > 1:
             self.log[-1][-1] += loss_sum.item()
 
-        self.display_loss(self.batch_size)
+        print(self.display_loss(self.batch_size))
 
         return loss_sum
 

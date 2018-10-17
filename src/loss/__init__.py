@@ -16,6 +16,7 @@ class Loss(modules.loss._Loss):
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.n_GPUs = args.n_GPUs
         self.dir = os.path.join(args.dir_root, 'loss')
+        self.batch_size = args.batch_size
 
         self.loss = []
         self.loss_module = nn.ModuleList()
@@ -37,6 +38,8 @@ class Loss(modules.loss._Loss):
         loss_sum = sum(losses)
         if len(self.loss) > 1:
             self.log[-1][-1] += loss_sum.item()
+
+        self.display_loss(self.batch_size)
 
         return loss_sum
 
@@ -110,12 +113,13 @@ class Loss(modules.loss._Loss):
                     'function': loss_function
                     })
 
-            # if len(self.loss) > 1:
-            #     self.loss.append({
-            #         'type': 'Total',
-            #         'weight': 0,
-            #         'function': None
-            #         })
+            # just for displaying the total loss
+            if len(self.loss) > 1:
+                self.loss.append({
+                    'type': 'Total',
+                    'weight': 0,
+                    'function': None
+                    })
 
             for l in self.loss:
                 if l['function'] is not None:

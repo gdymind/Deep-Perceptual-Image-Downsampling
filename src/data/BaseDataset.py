@@ -14,7 +14,6 @@ from utility import *
 
 class BaseDataset(data.Dataset):
     def __init__(self, args, name = "DIV2K", train = True):
-        self.args = args
         self.name = name
 
         self.train = train
@@ -43,7 +42,7 @@ class BaseDataset(data.Dataset):
         # set images
         filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
         filenames = filenames[fileIdx[0] - 1: fileIdx[1]]
-        self.images = self._load_bin(filenames, path_bin)
+        self.images = self._load_bin(filenames, path_bin, args.reset)
 
         #print(self.__len__())
         #item = self.__getitem__(150)
@@ -60,11 +59,11 @@ class BaseDataset(data.Dataset):
         else: # return idx to set filename
             return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), idx]
 
-    def _load_bin(self, names, path_bin):
+    def _load_bin(self, names, path_bin, reset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
         #make_bin = (bin_number == len(names))
         make_bin = not os.path.isfile(path_bin)
-        make_bin = make_bin or self.args.reset
+        make_bin = make_bin or reset
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [imageio.imread(i) for i in names]
@@ -111,19 +110,15 @@ class BaseDataset(data.Dataset):
 
     def get_patch(self, idx):
         img = np.copy(self.images[idx])
-        size_i, size_j = img.shape[1:3]
-        p = self.patch_size
-        # print(p, size_i, size_j)
 
-        i = random.randrange(0, size_i - p + 1)
-        j = random.randrange(0, size_j - p + 1)
-        if not self.train:
-            i = 0
-            j = 0
         if self.train:
+            size_i, size_j = img.shape[1:3]
+            p = self.patch_size
+            i = random.randrange(0, size_i - p + 1)
+            j = random.randrange(0, size_j - p + 1)
+            i = max(0, i)
+            j = max(0, j)
             img = img[:, i: i + p, j: j + p]
-
-        if self.train:
             img = self.data_augument(img)
 
         return img

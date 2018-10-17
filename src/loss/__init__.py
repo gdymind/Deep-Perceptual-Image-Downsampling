@@ -40,6 +40,7 @@ class Loss(modules.loss._Loss):
             self.log[-1][-1] += loss_sum.item()
 
         print(self.display_loss(self.batch_size))
+        print('loss sum =', loss_sum)
 
         return loss_sum
 

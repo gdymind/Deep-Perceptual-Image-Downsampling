@@ -134,7 +134,7 @@ class Trainer():
         for batch, img in enumerate(self.loader_train):
             # timer_data.hold()
             # print('batch {} load time: {}'.format(batch, timer_data.toc()))
-            print('batch {} starts'.format(batch))
+            print('[batch {}] starts'.format(batch))
             # print('img size:', img.size())
             timer_model.tic()
             self.optimizer.zero_grad()
@@ -142,18 +142,15 @@ class Trainer():
             img_up = self.upscale_imgs(img_down, self.cur_scale)
             # print('img_down.size() =', img_down.size())
             loss = self.loss(img, img_up)
-            print('loss =', loss)
+            print('Total loss =', loss)
 
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
                 self.optimizer.step()
             else:
-                print('Skip batch {}. (Loss = {})'.format(
-                        batch + 1))
-            print('batch {} ends'.format(batch))
-
+                print('Skip batch {}. (Loss = {})'.format(batch + 1))
             # timer_model.hold()
-            print('time: ', timer_model.toc())
+            print('[Batch {}] time: {}'.format(batch, timer_model.toc()))
 
             # if (batch + 1) % self.args.print_every == 0:
             #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(

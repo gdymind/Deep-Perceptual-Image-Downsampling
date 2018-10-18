@@ -166,8 +166,8 @@ class Trainer():
             print('[Batch {}] time: {}'.format(batch, timer_model.toc()))
 
             # save_result_imgs('aa', img_down.squeeze(0), 2)
-            print('img_down mean:', img_down.mean())
-            a = input('input anything:')
+            # print('img_down mean:', img_down.mean())
+            # a = input('input anything:')
             # if (batch + 1) % self.args.print_every == 0:
             #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(
             #         (batch + 1) * self.args.batch_size,
@@ -185,7 +185,10 @@ class Trainer():
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
             print('img path:', filename)
+            print('img mean:', img.mean())
             ndarr = img.data.byte().cpu().numpy()
+            print('ndarr mean:', ndarr.mean())
+            a = input('input anything...')
             # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
             # recover img
             for i, data in enumerate(ndarr):

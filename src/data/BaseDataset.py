@@ -54,10 +54,12 @@ class BaseDataset(data.Dataset):
 
 
     def __getitem__(self, idx):
+        # for trainset, return the image
+        # for testset, return the image and the filename
         if self.train:
             return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
-        else: # return idx to set filename
-            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), idx]
+        else:
+            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.images[idx][1]]
 
     def _load_bin(self, names, path_bin, reset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -66,14 +68,16 @@ class BaseDataset(data.Dataset):
         make_bin = make_bin or reset
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
-            imgs = [imageio.imread(i) for i in names]
+            imgs = [[imageio.imread(iname), iname] for iname in names] # iname means 'image name'
             # swap dimensions(channel, height, weight)
             # print('Shape before:', imgs[0].shape)
-            imgs = [np.ascontiguousarray(np.transpose(x, (2, 0, 1))) for x in imgs]
+            imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
             # pre-process
-            for img in imgs:
-                for i, data in enumerate(img):
-                    img[i] = (data.astype(float) - imgGlobalMean[i]) / imgGlobalStd[i]
+            for i, data in enumerate(imgs):
+                img, iname = data
+                for j, img_channel in enumerate(img):
+                    img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
+                imgs[i] = [img, iname]
             # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
@@ -109,7 +113,7 @@ class BaseDataset(data.Dataset):
         return np.ascontiguousarray(img)
 
     def get_patch(self, idx):
-        img = np.copy(self.images[idx])
+        img = np.copy(self.images[idx][0])
 
         if self.train:
             size_i, size_j = img.shape[1:3]

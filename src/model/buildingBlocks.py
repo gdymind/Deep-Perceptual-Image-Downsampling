@@ -66,7 +66,6 @@ class DenseBlock(nn.Module):
         self.conv = CBA_Block(in_channels, growth_rate, kernel_size, stride, bias, act = act)
 
     def forward(self, x):
-        # print('flag')
         out = self.conv(x)
         out = torch.cat((x, out), 1)# the first dimension is the batch index, so we should cat the second dimension
         return out

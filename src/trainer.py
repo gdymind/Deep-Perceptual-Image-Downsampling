@@ -167,13 +167,14 @@ class Trainer():
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
             print('img mean', img.mean())
             ndarr = img.cpu().numpy()
-            print('ndarr mean', img.mean())
-            a = input('input anything...')
+            print('ndarr mean Before', ndarr.mean())
             # recover img
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
             ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int).clip(0, 255)
             misc.imsave(filename, ndarr)
+            print('ndarr mean After', ndarr.mean())
+            a = input('input anything...')
 
         self.model.eval() # set test mode
         epoch = self.scheduler.last_epoch + 1

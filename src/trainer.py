@@ -170,15 +170,10 @@ class Trainer():
             # recover img
             print
             for i, data in enumerate(ndarr):
-                # print(data)
                 ndarr[i] = data * imgGlobalStd[i] + imgGlobalMean[i]
-                # print(ndarr[i])
             ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
-            print('ndarr mean After', ndarr.mean())
             ndarr = ndarr.clip(0, 255)
-            print('ndarr mean clip', ndarr.mean())
             misc.imsave(filename, ndarr)
-            a = input('input anything...')
 
         self.model.eval() # set test mode
         epoch = self.scheduler.last_epoch + 1

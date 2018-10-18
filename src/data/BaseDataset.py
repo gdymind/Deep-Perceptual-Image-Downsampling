@@ -126,10 +126,11 @@ class BaseDataset(data.Dataset):
         if self.train:
             size_i, size_j = img.shape[1:3]
             p = self.patch_size
-            i = random.randrange(0, size_i - p + 1)
-            j = random.randrange(0, size_j - p + 1)
-            i = max(0, i)
-            j = max(0, j)
+            i, j = 0, 0
+            if p < size_i:
+                i = random.randrange(0, size_i - p + 1)
+            if p < size_j:
+                j = random.randrange(0, size_j - p + 1)
             img = img[:, i: i + p, j: j + p]
             img = self.data_augument(img)
 

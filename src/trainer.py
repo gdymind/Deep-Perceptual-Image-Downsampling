@@ -189,9 +189,7 @@ class Trainer():
             tqdm_test = tqdm(self.loader_test) # show progress bar
             for i, data in enumerate(tqdm_test):
                 img = data[0]
-                filename = data[1]
-                print(img.shape)
-                print('filename', filename)
+                filename = data[1][0]
                 # filename = str(data[1].numpy()[0])
                 # if len(filename) < 4:
                 #     filename = ('0' * (4 - len(filename))) + filename

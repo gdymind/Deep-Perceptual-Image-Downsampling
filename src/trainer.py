@@ -165,7 +165,8 @@ class Trainer():
             # timer_model.hold()
             print('[Batch {}] time: {}'.format(batch, timer_model.toc()))
 
-            save_result_imgs('aa', img_down.squeeze(0), 2)
+            # save_result_imgs('aa', img_down.squeeze(0), 2)
+            print('img_down mean:', img_down.mean())
             a = input('input anything:')
             # if (batch + 1) % self.args.print_every == 0:
             #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(

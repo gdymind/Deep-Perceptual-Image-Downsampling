@@ -69,8 +69,6 @@ class BaseDataset(data.Dataset):
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [[imageio.imread(iname), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
-            print('flag')
-            print(imgs[0][1])
             # swap dimensions(channel, height, weight)
             # print('Shape before:', imgs[0].shape)
             imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
@@ -80,6 +78,7 @@ class BaseDataset(data.Dataset):
                 for j, img_channel in enumerate(img):
                     img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
                 imgs[i] = [img, iname]
+            print('file name xxx:', imgs[0][1])
             # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:

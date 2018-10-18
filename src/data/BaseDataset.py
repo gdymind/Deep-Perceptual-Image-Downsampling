@@ -78,7 +78,7 @@ class BaseDataset(data.Dataset):
                 for j, img_channel in enumerate(img):
                     img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
                 imgs[i] = [img, iname]
-            # print('Shape after:', imgs[0].shape)
+            print('imgs mean:', imgs.mean())
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)

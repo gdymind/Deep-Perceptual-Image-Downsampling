@@ -69,7 +69,7 @@ class BaseDataset(data.Dataset):
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [[imageio.imread(iname), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
-            # print('file name:', imgs[0][1])
+            print('file name xx:', imgs[0][1])
             # swap dimensions(channel, height, weight)
             # print('Shape before:', imgs[0].shape)
             imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]

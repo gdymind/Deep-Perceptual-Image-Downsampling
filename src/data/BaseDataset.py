@@ -68,22 +68,25 @@ class BaseDataset(data.Dataset):
         make_bin = make_bin or reset
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
-            imgs = [[imageio.imread(iname), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
+            imgs = [[imageio.imread(iname).astype(float), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
             # swap dimensions(channel, height, weight)
             # print('Shape before:', imgs[0].shape)
             imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
             # pre-process
             print('imgGlobalMean', imgGlobalMean)
             print('imgGlobalStd', imgGlobalStd)
-            print('Before imgs mean:', imgs[0][0].max())
-            print('Before imgs max:', imgs[0][0].max())
+            # print('Before imgs mean:', imgs[0][0].mean())
+            # print('Before imgs max:', imgs[0][0].max())
             for i, data in enumerate(imgs):
                 img, iname = data
                 for j, img_channel in enumerate(img):
-                    img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
+                    print('img[{}] max before: {}'.format(j, img[j].max()))
+                    img[j] = (img_channel - imgGlobalMean[j]) / imgGlobalStd[j]
+                    print('img[{}] max after: {}'.format(j, img[j].max()))
+                print('Total img max after: {}'.format(img[j].max()))
                 imgs[i] = [img, iname]
-            print('After imgs mean:', imgs[0][0].max())
-            print('After imgs max:', imgs[0][0].max())
+            # print('After imgs mean:', imgs[0][0].mean())
+            # print('After imgs max:', imgs[0][0].max())
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)

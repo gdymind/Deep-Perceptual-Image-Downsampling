@@ -186,7 +186,7 @@ class Trainer():
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
             # print('img path:', filename)
             print('img mean:', img.mean())
-            ndarr = img.numpy()
+            ndarr = img.cpu().numpy()
             # ndarr = img.data.byte().cpu().numpy()
             print('ndarr mean:', ndarr.mean())
             a = input('input anything...')

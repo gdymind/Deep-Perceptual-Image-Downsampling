@@ -170,6 +170,7 @@ class Trainer():
             print('ndarr mean Before', ndarr.mean())
             # recover img
             for i, data in enumerate(ndarr):
+                print(imgGlobalMean[i], imgGlobalStd[i])
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
             ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
             print('ndarr mean After', ndarr.mean())

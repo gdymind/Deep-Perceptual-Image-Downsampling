@@ -167,7 +167,7 @@ class Trainer():
         def save_result_imgs(filename, img, scale):
             apath = os.path.join(self.dir_log, 'results')
             os.makedirs(apath, exist_ok = True)
-            filename = os.path.join(apath, '{}x{}'.format(filename, scale))
+            filename = os.path.join(apath, filename + '_{}.png'.format(scale))
             print('img path:', filename)
             ndarr = img.data.byte().cpu().numpy()
             # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
@@ -175,7 +175,7 @@ class Trainer():
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
             ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
-            misc.imsave('{}.png'.format(filename), ndarr)
+            misc.imsave(filename, ndarr)
 
         self.model.eval() # set test mode
         epoch = self.scheduler.last_epoch + 1

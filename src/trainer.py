@@ -110,19 +110,6 @@ class Trainer():
         return imgs
 
     def train(self):
-        def save_result_imgs(filename, img, scale):
-            apath = os.path.join(self.dir_log, 'results')
-            os.makedirs(apath, exist_ok = True)
-            filename = os.path.join(apath, filename + '_{}.png'.format(scale))
-            print('img path:', filename)
-            ndarr = img.data.byte().cpu().numpy()
-            # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
-            # recover img
-            for i, data in enumerate(ndarr):
-                ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
-            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int).clip(0, 255)
-            misc.imsave(filename, ndarr)
-
         self.model.train(True)
 
         self.scheduler.step()
@@ -178,7 +165,10 @@ class Trainer():
             apath = os.path.join(self.dir_log, 'results')
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
+            print('img mean', img.mean())
             ndarr = img.cpu().numpy()
+            print('ndarr mean', img.mean())
+            a = input('input anything...')
             # recover img
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]

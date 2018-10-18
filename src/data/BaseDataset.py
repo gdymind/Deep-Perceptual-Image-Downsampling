@@ -78,7 +78,6 @@ class BaseDataset(data.Dataset):
                 for j, img_channel in enumerate(img):
                     img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
                 imgs[i] = [img, iname]
-            print('file name xxx:', imgs[0][1])
             # print('Shape after:', imgs[0].shape)
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:

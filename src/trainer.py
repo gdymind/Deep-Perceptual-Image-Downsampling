@@ -190,6 +190,7 @@ class Trainer():
             for i, data in enumerate(tqdm_test):
                 img = data[0]
                 filename = data[1]
+                print(img.shape)
                 print('filename', filename)
                 # filename = str(data[1].numpy()[0])
                 # if len(filename) < 4:

@@ -40,7 +40,6 @@ class Loss(modules.loss._Loss):
             self.log[-1][-1] += loss_sum.item()
 
         print(self.display_loss(self.batch_size))
-        print('loss sum =', loss_sum)
 
         return loss_sum
 
@@ -78,10 +77,10 @@ class Loss(modules.loss._Loss):
             plt.close(fig)
 
     def display_loss(self, batch):
-        n_samples = batch + 1
+        n_samples = batch
         log = []
         for l, c in zip(self.loss, self.log[-1]):
-            log.append('[{}: {:.4f}]'.format(l['type'], c / n_samples))
+            log.append('[{}: ]{:.4f}'.format(l['type'], c / n_samples))
 
         return ''.join(log)
 

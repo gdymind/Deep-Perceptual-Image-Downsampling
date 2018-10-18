@@ -174,7 +174,7 @@ class Trainer():
             # recover img
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
-            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
+            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int).clip(0, 255)
             misc.imsave(filename, ndarr)
 
         self.model.eval() # set test mode

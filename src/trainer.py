@@ -101,17 +101,11 @@ class Trainer():
     def upscale_imgs(self, imgs, scale):
         #batch, channel, height, width
         n, c, h, w = imgs.size()
-        # print('a', imgs.size())
         imgs = imgs.view(n, c, h * w, 1).contiguous()
-        # print('b', imgs.size())
         imgs = imgs.repeat(1, 1, 1, scale * scale).contiguous()
-        # print('c', imgs.size())
         imgs = imgs.view(n, c, h, w, scale, scale).contiguous()
-        # print('d', imgs.size())
         imgs = imgs.permute(0, 1, 2, 4, 3, 5).contiguous()
-        # print('e', imgs.size())
         imgs = imgs.view(n, c, h * scale, w * scale).contiguous()
-        # print('f', imgs.size())
 
         return imgs
 
@@ -155,7 +149,7 @@ class Trainer():
             img_up = self.upscale_imgs(img_down, self.cur_scale)
             # print('img_down.size() =', img_down.size())
             loss = self.loss(img, img_up)
-            print('Total loss =', loss)
+            print('Batch otal loss =', loss)
 
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
@@ -184,13 +178,7 @@ class Trainer():
             apath = os.path.join(self.dir_log, 'results')
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
-            # print('img path:', filename)
-            print('img mean:', img.mean())
             ndarr = img.cpu().numpy()
-            # ndarr = img.data.byte().cpu().numpy()
-            print('ndarr mean:', ndarr.mean())
-            a = input('input anything...')
-            # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd
             # recover img
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
@@ -216,12 +204,6 @@ class Trainer():
                 # print(filename)
 
                 img_down = self.model(img).squeeze(0)
-                # print('img size', img_down.size())
-                # print('img_down max', img_down[0].mean())
-                # print('img_down max', img_down[1].mean())
-                # print('img_down max', img_down[2].mean())
-                # img_down = img_down.clamp(0, 1)
-                # img_down *= 255
 
                 if save_results:
                     save_result_imgs(filename, img_down, self.cur_scale)

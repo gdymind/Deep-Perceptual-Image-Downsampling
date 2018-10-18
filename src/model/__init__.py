@@ -30,6 +30,7 @@ class BaseModel(nn.Module):
         # if not args.cpu and args.n_GPUs > 1:
         #     self.model = nn.DataParallel(self.model, range(args.n_GPUs))
         #     self.model = self.model.module
+        print('Done with making model')
 
 
         # now resume from certain checkpoint

@@ -152,8 +152,6 @@ class Trainer():
             timer_model.tic()
             self.optimizer.zero_grad()
             img_down = self.model(img)
-            save_result_imgs('aa', img_down.squeeze(0), 2)
-            a = input('input anything:')
             img_up = self.upscale_imgs(img_down, self.cur_scale)
             # print('img_down.size() =', img_down.size())
             loss = self.loss(img, img_up)
@@ -167,6 +165,8 @@ class Trainer():
             # timer_model.hold()
             print('[Batch {}] time: {}'.format(batch, timer_model.toc()))
 
+            save_result_imgs('aa', img_down.squeeze(0), 2)
+            a = input('input anything:')
             # if (batch + 1) % self.args.print_every == 0:
             #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(
             #         (batch + 1) * self.args.batch_size,

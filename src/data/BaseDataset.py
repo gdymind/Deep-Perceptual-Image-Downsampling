@@ -75,18 +75,18 @@ class BaseDataset(data.Dataset):
             # pre-process
             print('imgGlobalMean', imgGlobalMean)
             print('imgGlobalStd', imgGlobalStd)
-            # print('Before imgs mean:', imgs[0][0].mean())
-            # print('Before imgs max:', imgs[0][0].max())
+            print('Before imgs mean:', imgs[0][0].mean())
+            print('Before imgs max:', imgs[0][0].max())
             for i, data in enumerate(imgs):
                 img, iname = data
                 for j, img_channel in enumerate(img):
-                    print('img[{}] max before: {}'.format(j, img[j].max()))
+                    # print('img[{}] max before: {}'.format(j, img[j].max()))
                     img[j] = (img_channel - imgGlobalMean[j]) / imgGlobalStd[j]
-                    print('img[{}] max after: {}'.format(j, img[j].max()))
-                print('Total img max after: {}'.format(img[j].max()))
+                    # print('img[{}] max after: {}'.format(j, img[j].max()))
+                # print('Total img max after: {}'.format(img[j].max()))
                 imgs[i] = [img, iname]
-            # print('After imgs mean:', imgs[0][0].mean())
-            # print('After imgs max:', imgs[0][0].max())
+            print('After imgs mean:', imgs[0][0].mean())
+            print('After imgs max:', imgs[0][0].max())
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)

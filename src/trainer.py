@@ -184,9 +184,10 @@ class Trainer():
             apath = os.path.join(self.dir_log, 'results')
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
-            print('img path:', filename)
+            # print('img path:', filename)
             print('img mean:', img.mean())
-            ndarr = img.data.byte().cpu().numpy()
+            ndarr = img.numpy()
+            # ndarr = img.data.byte().cpu().numpy()
             print('ndarr mean:', ndarr.mean())
             a = input('input anything...')
             # ndarr = (ndarr + imgGlobalMean) * imgGlobalStd

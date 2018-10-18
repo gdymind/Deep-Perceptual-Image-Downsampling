@@ -73,12 +73,17 @@ class BaseDataset(data.Dataset):
             # print('Shape before:', imgs[0].shape)
             imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
             # pre-process
+            print('imgGlobalMean', imgGlobalMean)
+            print('imgGlobalStd', imgGlobalStd)
+            print('Before imgs mean:', imgs[0][0].max())
+            print('Before imgs max:', imgs[0][0].max())
             for i, data in enumerate(imgs):
                 img, iname = data
                 for j, img_channel in enumerate(img):
                     img[j] = (img_channel.astype(float) - imgGlobalMean[j]) / imgGlobalStd[j]
                 imgs[i] = [img, iname]
-            print('imgs max:', imgs[0][0].max())
+            print('After imgs mean:', imgs[0][0].max())
+            print('After imgs max:', imgs[0][0].max())
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)

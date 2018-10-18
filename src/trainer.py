@@ -171,9 +171,11 @@ class Trainer():
             # recover img
             for i, data in enumerate(ndarr):
                 ndarr[i] = (data + imgGlobalMean[i]) * imgGlobalStd[i]
-            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int).clip(0, 255)
-            misc.imsave(filename, ndarr)
+            ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
             print('ndarr mean After', ndarr.mean())
+            ndarr = ndarr.clip(0, 255)
+            print('ndarr mean clip', ndarr.mean())
+            misc.imsave(filename, ndarr)
             a = input('input anything...')
 
         self.model.eval() # set test mode

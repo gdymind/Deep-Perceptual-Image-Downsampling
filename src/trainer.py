@@ -121,30 +121,29 @@ class Trainer():
         self.ckp.save_log_txt('[Epoch {}] Learning rate: {:.2e}'.format(epoch, Decimal(lr)))
         # self.loss.start_log()
 
-        timer_data, timer_model = Timer(), Timer()
-
-        # timer_data.tic()
+        timer = Timer()
 
         for batch, img in enumerate(self.loader_train):
-            # timer_data.hold()
-            # print('batch {} load time: {}'.format(batch, timer_data.toc()))
-            print('[batch {}] starts'.format(batch))
-            # print('img size:', img.size())
-            timer_model.tic()
+            timer.tic()
+            print('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
+
             self.optimizer.zero_grad()
             img_down = self.model(img)
             img_up = self.upscale_imgs(img_down, self.cur_scale)
-            # print('img_down.size() =', img_down.size())
             loss = self.loss(img, img_up)
-            print('Batch otal loss =', loss)
+            print('[Epoch {} Batch {}] Total loss = {:.2e}'.format(epoch, batch, loss))
 
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
                 self.optimizer.step()
             else:
                 print('Skip batch {}. (Loss = {})'.format(batch + 1))
-            # timer_model.hold()
-            print('[Batch {}] time: {}'.format(batch, timer_model.toc()))
+
+            timer.hold()
+            print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
+
+        print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))
+
 
             # save_result_imgs('aa', img_down.squeeze(0), 2)
             # print('img_down mean:', img_down.mean())

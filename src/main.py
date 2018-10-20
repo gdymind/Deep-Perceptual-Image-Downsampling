@@ -26,7 +26,7 @@ trainer = trainer.Trainer(args, loader, model, loss, checkpoint)
 while not trainer.should_terminate():
     trainer.train()
     trainer.test(True)
-    print('Total time = {}', str(datetime.timedelta(int(globalTimer.toc())))
+    print('Total time = {}', str(datetime.timedelta(int(globalTimer.toc()))))
 
 
 print('Total time (the whole program):', globalTimer.toc())

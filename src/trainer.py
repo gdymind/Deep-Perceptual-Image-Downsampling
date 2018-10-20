@@ -142,6 +142,7 @@ class Trainer():
 
             timer.hold()
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
+            print(globalTimer.toc())
             print('Program Total time = {}'.format(str(datetime.timedelta(globalTimer.toc()))))
 
 

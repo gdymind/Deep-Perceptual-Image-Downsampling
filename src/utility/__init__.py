@@ -4,10 +4,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from utility.timer import *
+
 imgGlobalRange = 255.0
 imgGlobalMean = (0.4488 * imgGlobalRange, 0.4371 * imgGlobalRange, 0.4040 * imgGlobalRange)
 imgGlobalStd = (imgGlobalRange, imgGlobalRange, imgGlobalRange)
 # imgGlobalStd = (10.0, 10.0, 10.0)
+
+globalTimer = Timer()
 
 # add mean or substract mean, then divided by std
 class MeanShift(nn.Conv2d):

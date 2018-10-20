@@ -7,6 +7,7 @@ import model
 import loss
 import trainer
 from utility.timer import *
+from utility import *
 import datetime
 
 # ensure that every time you train, the initial parameters are exactly the same
@@ -14,7 +15,6 @@ torch.manual_seed(args.seed)
 
 print('Use {}'.format('CPU' if args.cpu else 'GPU'))
 
-globalTimer = Timer()
 globalTimer.tic()
 
 checkpoint = Checkpoint(args)
@@ -26,9 +26,6 @@ trainer = trainer.Trainer(args, loader, model, loss, checkpoint)
 while not trainer.should_terminate():
     trainer.train()
     trainer.test(True)
-    print('Total time = {}', str(datetime.timedelta(int(globalTimer.toc()))))
-
 
 print('Total time (the whole program):', globalTimer.toc())
-
 print("The whole program has exited.")

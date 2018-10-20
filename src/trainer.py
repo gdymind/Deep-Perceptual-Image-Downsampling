@@ -141,12 +141,11 @@ class Trainer():
 
             timer.hold()
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
-            print('Program Total time = {}', str(datetime.timedelta(globalTimer.toc())))
+            print('Program Total time = {}'.format(str(datetime.timedelta(globalTimer.toc()))))
 
 
         print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))
-        print('Program Total time = {}', str(datetime.timedelta(globalTimer.toc())))
-
+        print('Program Total time = {}'.format(str(datetime.timedelta(globalTimer.toc()))))
 
             # save_result_imgs('aa', img_down.squeeze(0), 2)
             # print('img_down mean:', img_down.mean())

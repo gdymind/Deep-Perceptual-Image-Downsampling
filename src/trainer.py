@@ -11,6 +11,7 @@ import torch.optim.lr_scheduler as lrs
 
 from utility.timer import *
 from utility import *
+import datetime
 
 class Trainer():
     def __init__(self, args, loader, my_model, loss, ckp):

@@ -80,7 +80,7 @@ class Loss(modules.loss._Loss):
         n_samples = batch
         log = []
         for l, c in zip(self.loss, self.log[-1]):
-            log.append('[{}]\t{}*{:.4f} = {}\n'.format(l['type'], l['weight'], c/n_samples, l['weight']*c/n_samples))
+            log.append('[{} {}] {:.4f}\n'.format(l['type'], l['weight'], c/n_samples))
 
         return ''.join(log)
 

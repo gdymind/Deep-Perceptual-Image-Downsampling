@@ -22,7 +22,10 @@ class SSIM(nn.Module):
         n_channel = imgs1.size()[1]
         # print('n_channel =', n_channel)
 
-        return self._calc_ssim(imgs1, imgs2, self.window, self.window_size, n_channel, size_average = self.size_average)
+        res = self._calc_ssim(imgs1, imgs2, self.window, self.window_size, n_channel, size_average = self.size_average)
+        res = 0.5 * (1 - res)
+
+        return res
 
     def _gaussian(self, window_size, sigma):
         mid = window_size // 2

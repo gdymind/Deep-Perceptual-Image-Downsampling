@@ -117,7 +117,7 @@ class Loss(modules.loss._Loss):
             if len(self.loss) > 1:
                 self.loss.append({
                     'type': 'Total',
-                    'weight': 0,
+                    'weight': 1.0,
                     'function': None
                     })
 

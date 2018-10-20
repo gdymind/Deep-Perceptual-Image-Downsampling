@@ -48,11 +48,11 @@ parser.add_argument('--n_dense_layer', type = int, default = 6,
             help = 'the number of dense layers inside a residual dense block')
 parser.add_argument('--n_ResDenseBlock', type = int, default = 3,
             help = 'the number of residual dense blocks')
-parser.add_argument('--n_shallow_feature', type = int, default = 64,
+parser.add_argument('--n_shallow_feature', type = int, default = 8,
             help = 'the number of filters that SFE uses')
-parser.add_argument('--n_feature', type = int, default = 64,
+parser.add_argument('--n_feature', type = int, default = 8,
             help = 'the number of filters that RDBs uses')
-parser.add_argument('--growth_rate', type = int, default = 32,
+parser.add_argument('--growth_rate', type = int, default = 8,
             help = "growrh rate of the residual dense blocks")
     # techniques
 parser.add_argument('--shift_mean', default = 'y',

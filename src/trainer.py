@@ -118,21 +118,19 @@ class Trainer():
         epoch = self.scheduler.last_epoch + 1
 
         lr = self.scheduler.get_lr()[0]
-
         self.ckp.save_log_txt('[Epoch {}] Learning rate: {:.2e}'.format(epoch, Decimal(lr)))
-        # self.loss.start_log()
 
         timer = Timer()
 
         for batch, img in enumerate(self.loader_train):
             timer.tic()
-            print('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
+            self.ckp.save_log_txt('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
 
             self.optimizer.zero_grad()
             img_down = self.model(img)
             img_up = self.upscale_imgs(img_down, self.cur_scale)
             loss = self.loss(img, img_up)
-            print('[Epoch {} Batch {}] Total loss = {:.2e}'.format(epoch, batch, loss))
+            self.ckp.save_log_txt('[Epoch {} Batch {}] Total loss = {:.2e}'.format(epoch, batch, loss))
 
             if loss.item() < self.args.skip_threshold * self.error_last:
                 loss.backward()
@@ -144,23 +142,8 @@ class Trainer():
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
             print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
 
-
         print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))
         print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
-
-            # save_result_imgs('aa', img_down.squeeze(0), 2)
-            # print('img_down mean:', img_down.mean())
-            # a = input('input anything:')
-            # if (batch + 1) % self.args.print_every == 0:
-            #      self.ckp.write_log('[{}/{}]\t{}\t{:.1f}+{:.1f}s'.format(
-            #         (batch + 1) * self.args.batch_size,
-            #         len(self.loader_train.dataset),
-            #         self.loss.display_loss(batch),
-            #         timer_model.release(),
-            #         timer_data.release()))
-
-            # timer_data.tic()
-
 
     def test(self, save_results = False):
         def save_result_imgs(filename, img, scale):
@@ -190,15 +173,14 @@ class Trainer():
             for i, data in enumerate(tqdm_test):
                 img = data[0]
                 filename = data[1][0]
-                # filename = str(data[1].numpy()[0])
-                # if len(filename) < 4:
-                #     filename = ('0' * (4 - len(filename))) + filename
-                # print(filename)
 
-                img_down = self.model(img).squeeze(0)
+                img_down = self.model(img)
+                img_up = self.upscale_imgs(img_down, self.cur_scale)
+                loss = self.loss(img, img_up)
+                self.ckp.save_log_txt('[Epoch {} Test] Total loss = {:.2e}'.format(epoch, loss))
 
                 if save_results:
-                    save_result_imgs(filename, img_down, self.cur_scale)
+                    save_result_imgs(filename, img_down.squeeze(0), self.cur_scale)
 
                 # self.ckp.log[-1, idx_scale] = eval_acc / len(self.loader_test)
                 # best = self.ckp.log.max(0)

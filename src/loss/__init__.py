@@ -92,9 +92,9 @@ class Loss(modules.loss._Loss):
             resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
             self.load_state_dict(
                 torch.load(resume_file, map_location = self.device))
-            self.log.load_state_dict(
-                torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)),
-                    map_location = self.device))
+            # self.log.load_state_dict(
+            #     torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)),
+            #         map_location = self.device))
         else:
             for l in args.loss.split('+'):
                 loss_weight, loss_type = l.split('*')

@@ -82,12 +82,13 @@ class Trainer():
         return scheduler
 
     def load_optimizer(self, version):
-        if version != 'X':
-            resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
-            self.optimizer.load_state_dict(
-                torch.load(resume_file, map_location = self.device))
-        else:
-            self.optimizer = self._create_optimizer(self.args, self.model)
+        # if version != 'X':
+        #     resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+        #     self.optimizer.load_state_dict(
+        #         torch.load(resume_file, map_location = self.device))
+        # else:
+        #     self.optimizer = self._create_optimizer(self.args, self.model)
+        self.optimizer = self._create_optimizer(self.args, self.model)
 
 
     # def convert_tensor_device(self, *tensors):

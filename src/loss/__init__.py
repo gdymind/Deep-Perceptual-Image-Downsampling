@@ -1,6 +1,7 @@
 import os
 from importlib import import_module
 import matplotlib.pyplot as plt
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -55,7 +56,7 @@ class Loss(modules.loss._Loss):
     #     self.log.cat_(torch.zeros(1, len(self.loss)))
 
     # def end_log(self, n_batches):
-    #     self.log[-1].div_(n_batches)
+        # self.log[-1].div_(n_batches)
 
     def get_loss_module(self):
         if self.n_GPUs == 1:
@@ -64,15 +65,15 @@ class Loss(modules.loss._Loss):
             return self.loss_module.module
 
     def plot_loss(self, epoch):
-        axis = np.linspace(1, epoch, epoch)
-        for i, l in enumerate(self.loss):
+        axis = np.linspace(1, epoch, epoch) # start, stop, num
+        for i, l in enumerate(self.loss): # for each type of loss
             label = '{} Loss'.format(l['type'])
             fig = plt.figure()
             plt.title(label)
-            plt.plot(axis, self.log[:, i].numpy(), label=label)
+            plt.plot(axis, self.log[:, i].cpu().numpy(), label=label)
             plt.legend()
             plt.xlabel('Epochs')
-            plt.ylabel('Loss')
+            plt.ylabel(label)
             plt.grid(True)
             plt.savefig('{}/loss_{}.pdf'.format(self.dir, l['type']))
             plt.close(fig)

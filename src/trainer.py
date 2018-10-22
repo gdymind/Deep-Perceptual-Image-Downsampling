@@ -125,6 +125,8 @@ class Trainer():
 
         timer = Timer()
 
+        self.loss.start_log() # start a new log line
+
         for batch, img in enumerate(self.loader_train):
             timer.tic()
             self.ckp.save_log_txt('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
@@ -144,6 +146,8 @@ class Trainer():
             timer.hold()
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
             print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
+
+        self.loss.end_log(len(self.loader_train))
 
         print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))
         print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))

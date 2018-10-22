@@ -27,7 +27,6 @@ class Loss(modules.loss._Loss):
 
 
     def forward(self, img_down, img):
-        self.log = torch.cat((self.log, torch.zeros(1, len(self.loss))))
         losses = []
         for i, l in enumerate(self.loss):
             if l['function'] is not None:
@@ -51,11 +50,11 @@ class Loss(modules.loss._Loss):
             else:
                 print('no scheduler for', l)
 
-    # def start_log(self):
-    #     self.log.cat_(torch.zeros(1, len(self.loss)))
+    def start_log(self): # start a new log line
+        self.log.cat_(torch.zeros(1, len(self.loss)))
 
-    # def end_log(self, n_batches):
-        # self.log[-1].div_(n_batches)
+    def end_log(self, n_batches): # finish a new log line
+        self.log[-1].div_(n_batches)
 
     def get_loss_module(self):
         if self.n_GPUs == 1:

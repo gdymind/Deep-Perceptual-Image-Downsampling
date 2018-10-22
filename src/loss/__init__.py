@@ -15,8 +15,9 @@ class Loss(modules.loss._Loss):
         self.ckp = checkpoint
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.n_GPUs = args.n_GPUs
-        self.dir = os.path.join(args.dir_root, 'loss')
         self.batch_size = args.batch_size
+        self.dir = os.path.join(args.dir_log, 'loss')
+        os.makedirs(self.dir, exist_ok = True)
 
         self.loss = []
         self.loss_module = nn.ModuleList()

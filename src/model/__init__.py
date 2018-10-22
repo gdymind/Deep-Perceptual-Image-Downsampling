@@ -17,8 +17,7 @@ class BaseModel(nn.Module):
         self.cpu = args.cpu
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.n_GPUs = args.n_GPUs
-        self.dir = os.path.join(args.dir_root, 'model')
-
+        self.dir = os.path.join(args.dir_log, 'model')
         os.makedirs(self.dir, exist_ok = True)
 
         # import corresponding model

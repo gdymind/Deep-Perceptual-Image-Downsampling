@@ -18,7 +18,9 @@ class Loss(modules.loss._Loss):
         self.n_GPUs = args.n_GPUs
         self.batch_size = args.batch_size
         self.dir = os.path.join(args.dir_log, 'loss')
+        self.dir_figure = os.path.join(args.dir_log, 'figure')
         os.makedirs(self.dir, exist_ok = True)
+        os.makedirs(self.dir_figure, exist_ok = True)
 
         self.loss = []
         self.loss_module = nn.ModuleList()
@@ -74,7 +76,7 @@ class Loss(modules.loss._Loss):
             plt.xlabel('Epochs')
             plt.ylabel(label)
             plt.grid(True)
-            plt.savefig('{}/loss_{}.pdf'.format(self.dir, l['type']))
+            plt.savefig('{}/loss_{}.pdf'.format(self.dir_figure, l['type']))
             plt.close(fig)
 
     def display_loss(self, batch):

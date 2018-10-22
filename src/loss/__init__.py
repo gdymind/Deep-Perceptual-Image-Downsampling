@@ -26,17 +26,18 @@ class Loss(modules.loss._Loss):
         self.load_loss(args, args.resume_version)
 
 
-    def forward(self, img_down, img):
+    def forward(self, img_down, img, test = False):
         losses = []
         for i, l in enumerate(self.loss):
             if l['function'] is not None:
                 loss = l['function'](img_down, img)
                 effective_loss = l['weight'] * loss
                 losses.append(effective_loss)
-                self.log[-1][i] += effective_loss.item()
+                if not test:
+                    self.log[-1][i] += effective_loss.item()
 
         loss_sum = sum(losses)
-        if len(self.loss) > 1:
+        if (not test) and len(self.loss) > 1:
             self.log[-1][-1] += loss_sum.item()
 
         self.ckp.save_log_txt(self.display_loss(self.batch_size))

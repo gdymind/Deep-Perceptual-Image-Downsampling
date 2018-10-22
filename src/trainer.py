@@ -184,7 +184,7 @@ class Trainer():
 
                 img_down = self.model(img)
                 img_up = self.upscale_imgs(img_down, self.cur_scale)
-                loss = self.loss(img, img_up)
+                loss = self.loss(img, img_up, test = True)
                 self.ckp.save_log_txt('[Epoch {} Test] Total loss = {:.2e}'.format(epoch, loss))
 
                 if save_results:

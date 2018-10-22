@@ -147,6 +147,7 @@ class Trainer():
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))
             print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
 
+        print('len of loader_train', len(self.loader_train))
         self.loss.end_log(len(self.loader_train))
 
         print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))

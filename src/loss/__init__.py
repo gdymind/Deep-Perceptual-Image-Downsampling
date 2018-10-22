@@ -51,7 +51,7 @@ class Loss(modules.loss._Loss):
                 print('no scheduler for', l)
 
     def start_log(self): # start a new log line
-        self.log.cat_(torch.zeros(1, len(self.loss)))
+        self.log = torch.cat((self.log, torch.zeros(1, len(self.loss))))
 
     def end_log(self, n_batches): # finish a new log line
         self.log[-1].div_(n_batches)

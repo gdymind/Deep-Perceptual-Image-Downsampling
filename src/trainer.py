@@ -183,7 +183,7 @@ class Trainer():
                     save_result_imgs(filename, img_down.squeeze(0), self.cur_scale)
 
         if not self.args.test_only:
-            self.ckp.save(self, epoch, is_best = False)
+            self.ckp.save_current_states(self, epoch, is_best = False)
 
         self.ckp.save_log_txt('Test total time: {:.2f}s\n'.format(timer_test.toc()))
         # if not self.args.test_only:

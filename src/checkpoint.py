@@ -43,3 +43,8 @@ class Checkpoint():
 
     def stop(self):
         self.log_file.close()
+
+    def save_current_states(self, trainer, epoch, is_best = False):
+        trainer.model.save(epoch, is_best)
+        trainer.loss.save(epoch, is_best)
+        trainer.loss.plot_loss(epoch)

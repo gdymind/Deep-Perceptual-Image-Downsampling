@@ -182,17 +182,8 @@ class Trainer():
                 if save_results:
                     save_result_imgs(filename, img_down.squeeze(0), self.cur_scale)
 
-                # self.ckp.log[-1, idx_scale] = eval_acc / len(self.loader_test)
-                # best = self.ckp.log.max(0)
-                # self.ckp.write_log(
-                #     '[{} x{}]\tPSNR: {:.3f} (Best: {:.3f} @epoch {})'.format(
-                #         self.args.data_test,
-                #         scale,
-                #         self.ckp.log[-1, idx_scale],
-                #         best[0][idx_scale],
-                #         best[1][idx_scale] + 1
-                #     )
-                # )
+        if not self.args.test_only:
+            self.ckp.save(self, epoch, is_best = False)
 
         self.ckp.save_log_txt('Test total time: {:.2f}s\n'.format(timer_test.toc()))
         # if not self.args.test_only:

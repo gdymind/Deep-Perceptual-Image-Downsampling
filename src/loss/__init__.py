@@ -62,7 +62,7 @@ class Loss(modules.loss._Loss):
         else:
             return self.loss_module.module
 
-    def plot_loss(self, apath, epoch):
+    def plot_loss(self, epoch):
         axis = np.linspace(1, epoch, epoch)
         for i, l in enumerate(self.loss):
             label = '{} Loss'.format(l['type'])
@@ -73,7 +73,7 @@ class Loss(modules.loss._Loss):
             plt.xlabel('Epochs')
             plt.ylabel('Loss')
             plt.grid(True)
-            plt.savefig('{}/loss_{}.pdf'.format(apath, l['type']))
+            plt.savefig('{}/loss_{}.pdf'.format(self.dir, l['type']))
             plt.close(fig)
 
     def display_loss(self, batch):
@@ -141,6 +141,13 @@ class Loss(modules.loss._Loss):
         #     if hasattr(l, 'scheduler'):
         #         for _ in range(len(self.log)): l.scheduler.step()
 
-    def save(self, epoch):
+    def save(self, epoch, is_best = False):
         torch.save(self.state_dict(), os.path.join(self.dir, 'loss_{}.pt'.format(epoch)))
         torch.save(self.log, os.path.join(self.dir, 'loss_log_{}.pt'.format(epoch)))
+
+        torch.save(self.state_dict(), os.path.join(self.dir, 'loss_latest.pt'))
+        torch.save(self.log, os.path.join(self.dir, 'loss_log_latest.pt'))
+
+        if is_best:
+            torch.save(self.state_dict(), os.path.join(self.dir, 'loss_best.pt'))
+            torch.save(self.log, os.path.join(self.dir, 'loss_log_best.pt'))

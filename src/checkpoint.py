@@ -14,6 +14,10 @@ class Checkpoint():
         self.dir_model = os.path.join(self.dir, "model")
         self.dir_result = os.path.join(self.dir, "results")
 
+        os.makedirs(self.dir, exist_ok = True)
+        os.makedirs(self.dir_model, exist_ok = True)
+        os.makedirs(self.dir_result, exist_ok = True)
+
         if args.reset:
             os.system("rm -rf " + self.dir)
             print("Log files are all cleared")

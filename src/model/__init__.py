@@ -19,6 +19,8 @@ class BaseModel(nn.Module):
         self.n_GPUs = args.n_GPUs
         self.dir = os.path.join(args.dir_root, 'model')
 
+        os.makedirs(self.dir, exist_ok = True)
+
         # import corresponding model
         module = import_module('model.' + args.model)
         self.model = module.make_model(args).to(self.device)

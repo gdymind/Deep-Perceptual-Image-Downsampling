@@ -28,6 +28,9 @@ class Trainer():
         self.dir = os.path.join(args.dir_root, 'optimizer')
         self.dir_log = self.ckp.dir
 
+        os.makedirs(self.dir, exist_ok = True)
+        os.makedirs(self.dir_log, exist_ok = True)
+
 
         self.load_optimizer(args.resume_version)
         self.scheduler = self._create_scheduler(self.args, self.optimizer)

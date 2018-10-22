@@ -27,8 +27,7 @@ class Loss(modules.loss._Loss):
 
 
     def forward(self, img_down, img):
-        if self.log.size()[0] > 1:
-            self.log.append(torch.zeros(1, len(self.loss)))
+        self.log = torch.cat((self.log, torch.zeros(1, len(self.loss))))
         losses = []
         for i, l in enumerate(self.loss):
             if l['function'] is not None:
@@ -128,7 +127,7 @@ class Loss(modules.loss._Loss):
                     print('{:.3f} * {}'.format(l['weight'], l['type']))
                     self.loss_module.append(l['function'])
 
-            self.log = torch.Tensor(size = [1, len(self.loss)])
+            self.log = torch.Tensor()
             self.log.to(self.device)
             self.loss_module.to(self.device)
 

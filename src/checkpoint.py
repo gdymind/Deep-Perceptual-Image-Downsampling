@@ -10,7 +10,7 @@ class Checkpoint():
         self.args = args
         self.log = torch.Tensor()
 
-        self.dir = os.path.join(args.dir_log, args.log_name)
+        self.dir = args.dir_log
         self.dir_model = os.path.join(self.dir, "model")
         self.dir_result = os.path.join(self.dir, "results")
 

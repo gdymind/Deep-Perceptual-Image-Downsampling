@@ -25,7 +25,7 @@ class Trainer():
         self.model = my_model
         self.loss = loss
         self.ckp = ckp
-        self.dir = os.path.join(args.dir_root, 'optimizer')
+        self.dir = os.path.join(args.dir_log, 'optimizer')
         self.dir_log = self.ckp.dir
 
         os.makedirs(self.dir, exist_ok = True)

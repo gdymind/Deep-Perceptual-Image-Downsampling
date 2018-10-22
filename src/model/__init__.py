@@ -45,7 +45,7 @@ class BaseModel(nn.Module):
                 torch.load(resume_file, map_location = self.device))
 
     def save(self, epoch, is_best = False):
-        sd = self.model.state_dict()
+        sd = self.state_dict()
 
         torch.save(
             sd,

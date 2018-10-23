@@ -27,7 +27,7 @@ parser.add_argument('--dir_log', type = str, default = '@default',
 
 # Data specifications
     # dataset
-parser.add_argument('--data_name', type = str, default = 'DIV2K',
+parser.add_argument('--data_name', type = str, default = 'DIV2K/DIV2K',
             help = 'dataset name')
 parser.add_argument('--data_range', type = str, default = '1-50/51-51',
             help = 'train/test data range')

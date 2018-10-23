@@ -1,1 +1,1 @@
-python main.py --loss 1*MSE+10000*SSIM --data_name DIV2K/HighRes --data_range 1-50/1-12 --epochs 400 --lr_decay 200 --lr 0.0001 --reset y
+python main.py --loss 1*MSE+10000*SSIM --data_name DIV2K/HighRes --data_range 1-70/1-12 --epochs 100 --lr_decay 70 --lr 0.001 --reset n --scales 4 --patch_size 512

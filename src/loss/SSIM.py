@@ -11,7 +11,7 @@ def create_window(window_size, channel):
     _1D_window = gaussian(window_size, 1.5).unsqueeze(1) # n 1
     _2D_window = _1D_window.mm(_1D_window.t()).float().unsqueeze(0).unsqueeze(0) # 1 1 n n
     window = _2D_window.expand(channel, 1, window_size, window_size).contiguous() # c 1 n n
-    return window.to(self.device)
+    return window
 
 def _ssim(img1, img2, window, window_size, channel, size_average = True):
     mu1 = F.conv2d(img1, window, padding = window_size//2, groups = channel) # b c n n
@@ -42,7 +42,7 @@ class SSIM(torch.nn.Module):
         self.size_average = size_average
         self.channel = n_channel
         self.device = torch.device('cpu' if args.cpu else 'cuda')
-        self.window = create_window(window_size, self.channel)
+        self.window = create_window(window_size, self.channel).to(self.device)
         self.scales = args.scales
         self.cur_scale = self.scales[0]
 

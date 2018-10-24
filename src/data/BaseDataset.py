@@ -43,11 +43,13 @@ class BaseDataset(data.Dataset):
         # set images
         self.filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
         self.filenames = self.filenames[fileIdx[0] - 1: fileIdx[1]]
-        self._load_bin(self.filenames, path_bin, args.reset)
+        self.length = len(self.filenames)
+        # self._load_bin(self.filenames, path_bin, args.reset)
 
 
     def __len__(self):
-        return len(self.images)
+        # return len(self.images)
+        return self.length
 
 
     def __getitem__(self, idx):
@@ -56,7 +58,7 @@ class BaseDataset(data.Dataset):
         if self.train:
             return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
         else:
-            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.filenames[idx]]
+            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.filenames[idx].split('/')[-1].split('.')[0]]
 
     def _load_bin(self, names, path_bin, reset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -108,7 +110,8 @@ class BaseDataset(data.Dataset):
         return np.ascontiguousarray(img)
 
     def get_patch(self, idx):
-        img = np.copy(self.images[idx])
+        # img = np.copy(self.images[idx])
+        img = imageio.imread(self.filenames[idx])
         img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
         for i, img_channel in enumerate(img):
             img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]

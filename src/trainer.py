@@ -142,7 +142,7 @@ class Trainer():
                 loss.backward()
                 self.optimizer.step()
             else:
-                print('Skip batch {}. (Loss = {})'.format(batch + 1))
+                print('Skip batch {}. (Loss = {})'.format(batch + 1, loss.item()))
 
             timer.hold()
             print('[Epoch {} Batch {}] Batch time = {:.1}s'.format(epoch, batch, timer.toc()))

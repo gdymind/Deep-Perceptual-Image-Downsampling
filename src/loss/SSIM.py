@@ -7,7 +7,7 @@ from math import exp
 
 
 class SSIM(nn.Module):
-    def __init__(self, args, window_size = 11, n_channel = 3, size_average = True):
+    def __init__(self, args, window_size = 3, n_channel = 3, size_average = True):
         super(SSIM, self).__init__()
 
         self.window_size = window_size
@@ -23,7 +23,7 @@ class SSIM(nn.Module):
         # print('n_channel =', n_channel)
 
         res = self._calc_ssim(imgs1, imgs2, self.window, self.window_size, n_channel, size_average = self.size_average)
-        res = 0.5 * (1 - res)
+        res = (1 - res)
 
         return res
 
@@ -40,8 +40,8 @@ class SSIM(nn.Module):
     def _create_weights(self, window_size, n_channel):
         window = self._gaussian(window_size, 1.5).unsqueeze(1) # create n by 1 matrix
         window = window.mm(window.t()) # create n by n matrix
-        window = window.unsqueeze(0).unsqueeze(0).expand(n_channel, 1, window_size, window_size) # add 2 dimensions corresponding to channels and feature maps
-        window /= window.sum()
+        window = window.unsqueeze(0).unsqueeze(0).expand(n_channel, 1, window_size, window_size).contiguous() # add 2 dimensions corresponding to channels and feature maps
+        # window /= window.sum()
 
         return window.to(self.device)
 

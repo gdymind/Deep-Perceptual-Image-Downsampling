@@ -36,6 +36,9 @@ parser.add_argument('--n_channels', type = int, default = 3, # using Lab color s
     # techiniques
 parser.add_argument('--chop', type = str, default = 'y',
             help = 'enable memory-efficient forward')
+    # techiniques
+parser.add_argument('--gen_data_only', type = str, default = 'n',
+            help = 'Generate bin dataset, then exit the whole program')
 
 # Model specifications
     # model

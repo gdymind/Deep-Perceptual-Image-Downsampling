@@ -1,6 +1,7 @@
 import os
 import glob
 import random
+import sys
 
 import pickle
 import numpy as np
@@ -40,14 +41,12 @@ class BaseDataset(data.Dataset):
             path_bin = os.path.join(path_bin, self.name + "_test_bin.pt")
 
         # set images
-        filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
-        filenames = filenames[fileIdx[0] - 1: fileIdx[1]]
-        self.images = self._load_bin(filenames, path_bin, args.reset)
+        self.filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
+        self.filenames = filenames[fileIdx[0] - 1: fileIdx[1]]
+        self._load_bin(filenames, path_bin, args.reset)
 
-        #print(self.__len__())
-        #item = self.__getitem__(150)
-        #viewer = ImageViewer(item)
-        #viewer.show()
+        if args.gen_data_only:
+            sys.exit()
 
     def __len__(self):
         return len(self.images)
@@ -59,7 +58,7 @@ class BaseDataset(data.Dataset):
         if self.train:
             return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
         else:
-            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.images[idx][1]]
+            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.filenames[idx]]
 
     def _load_bin(self, names, path_bin, reset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -68,7 +67,9 @@ class BaseDataset(data.Dataset):
         make_bin = make_bin or reset
         if make_bin:
             print("Generating binary file:\t" + path_bin.split('/')[-1])
-            imgs = [[imageio.imread(iname).astype(float), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
+            print("Collecting images...")
+            self.images = [imageio.imread(iname).astype(float) for iname in names] # iname means 'image name'
+            self.filenames = [iname.split('/')[-1].split('.')[0] for iname in names]
             # swap dimensions(channel, height, weight)
             # imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
             # pre-process
@@ -77,20 +78,19 @@ class BaseDataset(data.Dataset):
             #     for j, img_channel in enumerate(img):
             #         img[j] = (img_channel - imgGlobalMean[j]) / imgGlobalStd[j]
             #     imgs[i] = [img, iname]
-            print("Found",len(imgs), "images")
+            print("Found",len(self.images), "images")
             with open(path_bin, "wb") as f:
-                pickle.dump(imgs, f)
+                pickle.dump(self.images, f)
                 f.close()
             print("Finished generating binary files")
-            return imgs
         else:
             print("Loading binary file:\t" + path_bin.split('/')[-1])
             with open(path_bin, "rb") as f:
-                imgs = pickle.load(f)
-                print("Found",len(imgs), "images")
+                self.images = pickle.load(f)
+                print("Found",len(self.images), "images")
                 print("Finished loading binary files")
                 f.close()
-                return imgs
+                return self.images
 
     def set_scale(self, scale):
         self.cur_scale = scale
@@ -110,7 +110,7 @@ class BaseDataset(data.Dataset):
         return np.ascontiguousarray(img)
 
     def get_patch(self, idx):
-        img = np.copy(self.images[idx][0])
+        img = np.copy(self.images[idx])
         img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
         for i, img_channel in enumerate(img):
             img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]

@@ -111,7 +111,7 @@ class BaseDataset(data.Dataset):
 
     def get_patch(self, idx):
         # img = np.copy(self.images[idx])
-        img = imageio.imread(self.filenames[idx])
+        img = imageio.imread(self.filenames[idx]).astype(float)
         img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
         for i, img_channel in enumerate(img):
             img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]

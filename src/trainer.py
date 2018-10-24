@@ -160,11 +160,11 @@ class Trainer():
             os.makedirs(apath, exist_ok = True)
             filename = os.path.join(apath, filename + '_{}.png'.format(scale))
             ndarr = img.cpu().numpy()
-            print('ndarr mean Before', ndarr.mean())
             # recover img
-            print
-            for i, data in enumerate(ndarr):
-                ndarr[i] = data * imgGlobalStd[i] + imgGlobalMean[i]
+            # for i, data in enumerate(ndarr):
+            #     ndarr[i] = data * imgGlobalStd[i] + imgGlobalMean[i]
+            for i in range(ndarr.shape[0]):
+                ndarr[i] *= imgGlobalRange
             ndarr = np.transpose(ndarr, (1, 2, 0)).astype(int)
             ndarr = ndarr.clip(0, 255)
             misc.imsave(filename, ndarr)

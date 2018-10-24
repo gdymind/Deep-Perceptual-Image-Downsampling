@@ -113,8 +113,10 @@ class BaseDataset(data.Dataset):
         # img = np.copy(self.images[idx])
         img = imageio.imread(self.filenames[idx]).astype(float)
         img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
-        for i, img_channel in enumerate(img):
-            img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]
+        # for i, img_channel in enumerate(img):
+            # img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]
+        for i in range(img.size()[0]):
+            img[i] /= imgGlobalRange
 
         if self.train:
             size_i, size_j = img.shape[1:3]

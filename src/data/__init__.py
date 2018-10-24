@@ -1,3 +1,5 @@
+import sys
+
 from data.BaseDataset import BaseDataset
 from torch.utils.data.dataloader import DataLoader
 
@@ -23,3 +25,6 @@ class  Data:
                 shuffle = True, pin_memory = args.cpu)
             # self.loader_train = MSDataLoader(args, trainset, batch_size = args.batch_size,
             #     shuffle = True, pin_memory = not arg.cpu)
+
+        if args.gen_data_only:
+            sys.exit()

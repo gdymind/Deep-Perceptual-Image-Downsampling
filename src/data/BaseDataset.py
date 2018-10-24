@@ -42,11 +42,9 @@ class BaseDataset(data.Dataset):
 
         # set images
         self.filenames = sorted(glob.glob(os.path.join(path_root, '*.png')))
-        self.filenames = filenames[fileIdx[0] - 1: fileIdx[1]]
-        self._load_bin(filenames, path_bin, args.reset)
+        self.filenames = self.filenames[fileIdx[0] - 1: fileIdx[1]]
+        self._load_bin(self.filenames, path_bin, args.reset)
 
-        if args.gen_data_only:
-            sys.exit()
 
     def __len__(self):
         return len(self.images)

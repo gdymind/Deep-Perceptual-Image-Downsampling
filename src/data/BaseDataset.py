@@ -115,7 +115,7 @@ class BaseDataset(data.Dataset):
         img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
         # for i, img_channel in enumerate(img):
             # img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]
-        for i in range(img.size()[0]):
+        for i in range(img.shape[0]):
             img[i] /= imgGlobalRange
 
         if self.train:

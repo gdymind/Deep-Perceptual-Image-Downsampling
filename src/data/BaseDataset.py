@@ -70,13 +70,13 @@ class BaseDataset(data.Dataset):
             print("Generating binary file:\t" + path_bin.split('/')[-1])
             imgs = [[imageio.imread(iname).astype(float), iname.split('/')[-1].split('.')[0]] for iname in names] # iname means 'image name'
             # swap dimensions(channel, height, weight)
-            imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
+            # imgs = [[np.ascontiguousarray(np.transpose(img, (2, 0, 1))), iname] for img, iname in imgs]
             # pre-process
-            for i, data in enumerate(imgs):
-                img, iname = data
-                for j, img_channel in enumerate(img):
-                    img[j] = (img_channel - imgGlobalMean[j]) / imgGlobalStd[j]
-                imgs[i] = [img, iname]
+            # for i, data in enumerate(imgs):
+            #     img, iname = data
+            #     for j, img_channel in enumerate(img):
+            #         img[j] = (img_channel - imgGlobalMean[j]) / imgGlobalStd[j]
+            #     imgs[i] = [img, iname]
             print("Found",len(imgs), "images")
             with open(path_bin, "wb") as f:
                 pickle.dump(imgs, f)
@@ -111,6 +111,9 @@ class BaseDataset(data.Dataset):
 
     def get_patch(self, idx):
         img = np.copy(self.images[idx][0])
+        img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
+        for i, img_channel in enumerate(img):
+            img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]
 
         if self.train:
             size_i, size_j = img.shape[1:3]

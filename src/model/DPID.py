@@ -28,7 +28,7 @@ class  DPID(nn.Module):
         mean = imgGlobalMean
         # std = (1.0, 1.0, 1.0)
 
-        self.SubMean = MeanShift(mean, -1)
+        self.SubMean = MeanShift(self.device, mean, -1)
 
         # shallow feature extraction (SFE)
         mlist = []
@@ -55,7 +55,7 @@ class  DPID(nn.Module):
         mlist.append(DownConvBlock(n_feature, self.cur_scale))
         self.Down = nn.Sequential(*mlist)
 
-        self.AddMean = MeanShift(mean, 1)
+        self.AddMean = MeanShift(self.device, mean, 1)
 
     def forward(self, x):
         x = self.SubMean(x)

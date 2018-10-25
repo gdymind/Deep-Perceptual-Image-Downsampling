@@ -5,15 +5,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class MeanShift(nn.Module):
-    def __init__(self, data_mean, sign = -1, channels = 3):
+    def __init__(self, device, data_mean, sign = -1, channels = 3):
         super(MeanShift, self).__init__()
-        self.mean = torch.Tensor(data_mean).view(1, channels, 1, 1).contiguous()
+        self.sign = sign
+        self.mean = torch.Tensor(data_mean).view(1, channels, 1, 1).contiguous().to(device)
         self.requires_grad = False
     def forward(self, x):
-        x += sign * self.mean()
+        x += self.sign * self.mean
         return x
-
-class AddMe
 
 
 # convolution that ensures out feature map shape == in feature map shape

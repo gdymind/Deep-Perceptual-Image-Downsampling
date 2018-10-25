@@ -101,7 +101,7 @@ class BaseDataset(data.Dataset):
         transpose = random.random() <= 0.5
 
         if flipx: # reverse the first dimension using slicing
-            img = img[:, ::-1, :] 
+            img = img[:, ::-1, :]
         if flipy: # reverse the second dimension using slicing
             img = img[:, :, ::-1]
         if transpose:

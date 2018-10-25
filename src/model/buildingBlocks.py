@@ -4,6 +4,18 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+class MeanShift(nn.Module):
+    def __init__(self, data_mean, sign = -1, channels = 3):
+        super(MeanShift, self).__init__()
+        self.mean = torch.Tensor(data_mean).view(1, channels, 1, 1).contiguous()
+        self.requires_grad = False
+    def forward(self, x):
+        x += sign * self.mean()
+        return x
+
+class AddMe
+
+
 # convolution that ensures out feature map shape == in feature map shape
 # note that kernel size must be odd
 def ConvHalfPad(in_channels, out_channels, kernel_size = 3, stride = 1, bias = True):

@@ -152,7 +152,7 @@ class Trainer():
         self.loss.end_log(len(self.loader_train))
 
         print('[Epoch {}] Epoch Time = {:.2e}'.format(epoch, timer.release()))
-        print('Program Total time = {}'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
+        print('Program Total time = {}\n'.format(str(datetime.timedelta(seconds = globalTimer.toc()))))
 
     def test(self, save_results = False):
         def save_result_imgs(filename, img, scale):

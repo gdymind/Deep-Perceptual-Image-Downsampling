@@ -42,7 +42,7 @@ class Loss(modules.loss._Loss):
         if (not test) and len(self.loss) > 1:
             self.log[-1][-1] += loss_sum.item()
 
-        self.ckp.save_log_txt(self.display_loss(self.batch_size))
+        self.ckp.save_log_txt(self.display_loss(1 if test else self.batch_size))
 
         return loss_sum
 
@@ -83,7 +83,7 @@ class Loss(modules.loss._Loss):
         n_samples = batch
         log = []
         for l, c in zip(self.loss, self.log[-1]):
-            log.append('[{} {}] {:.4f}\n'.format(l['type'], l['weight'], c/n_samples))
+            log.append('[{} {}] {:.4f}'.format(l['type'], l['weight'], c/n_samples))
 
         return ''.join(log)
 

@@ -34,6 +34,9 @@ class Checkpoint():
                 f.write('{}: \t{}\n'.format(arg, getattr(args, arg)))
             f.write('\n')
 
+        self.log_txt.write('===============\n')
+        self.log_txt.write(now + '\n')
+
     def append_log(self, log):
         self.log = torch.cat([self.log, log])
 

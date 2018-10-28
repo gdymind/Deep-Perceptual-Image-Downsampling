@@ -22,10 +22,6 @@ class Checkpoint():
             os.system("rm -rf " + self.dir)
             print("Log files are all cleared")
 
-        os.makedirs(self.dir, exist_ok = True)
-        os.makedirs(self.dir_model, exist_ok = True)
-        os.makedirs(self.dir_result, exist_ok = True)
-
         now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 
         self.log_txt = open(os.path.join(self.dir, "log.txt"), "a")

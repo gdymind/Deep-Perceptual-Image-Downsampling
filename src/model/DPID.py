@@ -58,7 +58,7 @@ class  DPID(nn.Module):
         self.AddMean = MeanShift(self.device, mean, 1)
 
     def forward(self, x):
-        x = self.SubMean(x)
+        # x = self.SubMean(x)
         # print('Shape input:', x.size())
         x = self.SFE(x)
         # print('Shape SFE:', x.size())
@@ -68,6 +68,6 @@ class  DPID(nn.Module):
         # print('Shape GFF:', x.size())
         x = self.Down(x)
         # print('Shape Down:', x.size())
-        x = self.AddMean(x)
+        # x = self.AddMean(x)
 
         return x

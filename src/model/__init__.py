@@ -82,4 +82,4 @@ class BaseModel(nn.Module):
         # else:
         #     return self.model(x)
 
-        return self.model(x)
+        return target(x)

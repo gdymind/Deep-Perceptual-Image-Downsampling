@@ -13,10 +13,12 @@ class Checkpoint():
         self.dir = args.dir_log
         self.dir_model = os.path.join(self.dir, "model")
         self.dir_result = os.path.join(self.dir, "results")
+        self.dir_log = os.path.join(self.dir, "log.txt")
 
         os.makedirs(self.dir, exist_ok = True)
         os.makedirs(self.dir_model, exist_ok = True)
         os.makedirs(self.dir_result, exist_ok = True)
+        os.makedirs(self.dir_log, exist_ok = True)
 
         if args.reset:
             os.system("rm -rf " + self.dir)
@@ -24,7 +26,7 @@ class Checkpoint():
 
         now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 
-        self.log_txt = open(os.path.join(self.dir, "log.txt"), "a")
+        self.log_txt = open(self.dir_log, "a")
 
         # write config.txt
         with open(os.path.join(self.dir, "config.txt"), "a") as f:
@@ -42,7 +44,7 @@ class Checkpoint():
 
     def save_log_txt(self, log):
         print(log)
-        self.log_txt = open(os.path.join(self.dir, "log.txt"), "a")
+        self.log_txt = open(self.dir_log, "a")
         self.log_txt.write(log + '\n')
         self.log_txt.close()
 

@@ -17,9 +17,9 @@ class BaseDataset(data.Dataset):
     def __init__(self, args, name = "DIV2K", train = True):
         self.name = name
 
-        self.train = train
-        self.scales = args.scales# all the possible scales
-        self.cur_scale = self.scales[0]# current scale
+        self.train = train # True means trainset, and False means testset
+        self.scales = args.scales # all the possible scales
+        self.cur_scale = self.scales[0] # current scale
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.patch_size = args.patch_size
 
@@ -56,9 +56,9 @@ class BaseDataset(data.Dataset):
         # for trainset, return the image
         # for testset, return the image and the filename
         if self.train:
-            return torch.from_numpy(self.get_patch(idx)).float().to(self.device)
+            return torch.Tensor(self.get_patch(idx)).float().to(self.device) # note that from_numpy() returns a Tensor that shares memory with the numpy array
         else:
-            return [torch.from_numpy(self.get_patch(idx)).float().to(self.device), self.filenames[idx].split('/')[-1].split('.')[0]]
+            return [torch.Tensor(self.get_patch(idx)).float().to(self.device), self.filenames[idx].split('/')[-1].split('.')[0]]
 
     def _load_bin(self, names, path_bin, reset):
         #bin_number = len(glob.glob(os.path.join(self.path_root, '*.pt')))
@@ -112,7 +112,7 @@ class BaseDataset(data.Dataset):
     def get_patch(self, idx):
         # img = np.copy(self.images[idx])
         img = imageio.imread(self.filenames[idx]).astype(float)
-        img = np.ascontiguousarray(np.transpose(img, (2, 0, 1)))
+        img = np.ascontiguousarray(np.transpose(img, (2, 0, 1))) # channel, height, weight
         # for i, img_channel in enumerate(img):
             # img[i] = (img_channel - imgGlobalMean[i]) / imgGlobalStd[i]
         for i in range(img.shape[0]):

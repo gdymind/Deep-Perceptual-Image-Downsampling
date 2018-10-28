@@ -43,8 +43,6 @@ class SSIM(torch.nn.Module):
         self.channel = n_channel
         self.device = torch.device('cpu' if args.cpu else 'cuda')
         self.window = create_window(window_size, self.channel).to(self.device)
-        self.scales = args.scales
-        self.cur_scale = self.scales[0]
 
     def forward(self, img1, img2):
         (_, channel, _, _) = img1.size()

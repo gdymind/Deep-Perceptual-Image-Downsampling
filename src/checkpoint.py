@@ -39,7 +39,9 @@ class Checkpoint():
 
     def save_log_txt(self, log):
         print(log)
+        self.log_txt = open(os.path.join(self.dir, "log.txt"), "a")
         self.log_txt.write(log + '\n')
+        self.log_txt.close()
 
     def stop(self):
         self.log_file.close()

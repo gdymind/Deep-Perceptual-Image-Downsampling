@@ -58,7 +58,8 @@ class Trainer():
             optimizer_function = optim.Adam
             kwargs = {
                 'betas': (args.beta1, args.beta2),
-                'eps': args.epsilon
+                'eps': args.epsilon,
+                'amsgrad': True
             }
         elif args.optimizer == 'RMSprop':
             optimizer_function = optim.RMSprop

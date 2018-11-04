@@ -9,6 +9,11 @@ python main.py --loss 1*SSIM --data_name DIV2K/HighRes --data_range 1-110/1-12 -
 python main.py --loss 1*SSIM --data_name DIV2K/HighRes --data_range 1-110/1-12 --epochs 500 --lr_decay 30 --lr 0.001 --reset y --scales 4 --patch_size 512 --n_ResDenseBlock 8 --n_feature 40  --n_dense_layer 10 --model DPIDSK
 
 #MSK
-python main.py --loss 1*SSIM --data_name DIV2K/HighRes --data_range 1-110/1-12 --epochs 500 --lr_decay 30 --lr 0.001 --reset y --scales 4 --patch_size 512 --n_ResDenseBlock 16 --n_feature 40  --n_dense_layer 10 --model MSK --batch_size 2
+python main.py --loss 1*SSIM --data_name DIV2K/HighRes --data_range 1-110/1-12 --epochs 500 --lr_decay 30 --lr 0.001 --reset y --scales 4 --patch_size 512 --n_ResDenseBlock 16 --n_feature 40  --n_dense_layer 8 --model MSK --batch_size 2
+
+
+#REC
+python main.py --loss 1*SSIM --data_name DIV2K/HighRes --data_range 1-110/1-12 --epochs 500 --lr_decay 30 --lr 0.001 --reset y --scales 4 --patch_size 512 --n_ResDenseBlock 8 --n_feature 40  --n_dense_layer 10 --model REC --batch_size 2
+
 
 

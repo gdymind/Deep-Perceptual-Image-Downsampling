@@ -134,9 +134,16 @@ class Trainer():
             self.ckp.save_log_txt('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
 
             self.optimizer.zero_grad()
-            img_down = self.model(img)
-            img_up = self.upscale_imgs(img_down, self.cur_scale)
-            loss = self.loss(img, img_up)
+            if self.args.model == 'REC':
+                img_rec, img_down = self.model(img)
+                img_up = self.upscale_imgs(img_down, self.cur_scale)
+                loss_rec = self.loss(img, img_rec)
+                loss_up = self.loss(img, img_up)
+                loss = loss_rec + loss_up
+            else:
+                img_down = self.model(img)
+                img_up = self.upscale_imgs(img_down, self.cur_scale)
+                loss = self.loss(img, img_up)
             self.ckp.save_log_txt('[Epoch {} Batch {}] Total loss = {:.2e}'.format(epoch, batch, loss))
 
             if loss.item() < self.args.skip_threshold * self.error_last:
@@ -184,9 +191,16 @@ class Trainer():
                 img = data[0]
                 filename = data[1][0]
 
-                img_down = self.model(img)
-                img_up = self.upscale_imgs(img_down, self.cur_scale)
-                loss = self.loss(img, img_up, test = True)
+                if self.args.model == 'REC':
+                    img_rec, img_down = self.model(img)
+                    img_up = self.upscale_imgs(img_down, self.cur_scale)
+                    loss_rec = self.loss(img, img_rec, test = True)
+                    loss_up = self.loss(img, img_up, test = True)
+                    loss = loss_rec + loss_up
+                else:
+                    img_down = self.model(img)
+                    img_up = self.upscale_imgs(img_down, self.cur_scale)
+                    loss = self.loss(img, img_up, test = True)
                 self.ckp.save_log_txt('[Epoch {} Test] Total loss = {:.2e}'.format(epoch, loss))
 
                 if save_results:

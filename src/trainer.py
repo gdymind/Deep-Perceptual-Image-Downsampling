@@ -31,9 +31,9 @@ class Trainer():
         os.makedirs(self.dir, exist_ok = True)
         os.makedirs(self.dir_log, exist_ok = True)
 
-
-        self.load_optimizer(args.resume_version)
+        self.load(args.resume_version)
         self.scheduler = self._create_scheduler(self.args, self.optimizer)
+        for _ in range(len(self.loss.log)): self.scheduler.step()
 
         self.error_last = 1e8 # error in the last step
 
@@ -82,15 +82,24 @@ class Trainer():
 
         return scheduler
 
-    def load_optimizer(self, version):
-        # if version != 'X':
-        #     resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
-        #     self.optimizer.load_state_dict(
-        #         torch.load(resume_file, map_location = self.device))
-        # else:
-        #     self.optimizer = self._create_optimizer(self.args, self.model)
-        self.optimizer = self._create_optimizer(self.args, self.model)
+    def load(self, version):
+        if version != 'X':
+            resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+            self.optimizer = self._create_optimizer(self.args, self.model)
+            self.optimizer.load_state_dict(torch.load(resume_file, map_location = self.device))
+        else:
+            self.optimizer = self._create_optimizer(self.args, self.model)
+        # self.optimizer = self._create_optimizer(self.args, self.model)
 
+    def save(self, version, is_best = False):
+        resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+        torch.save(self.optimizer.state_dict(), resume_file)
+        resume_file = os.path.join(self.dir, 'optimizer_latest.pt'.format(version))
+        torch.save(self.optimizer.state_dict(), resume_file)
+
+        if is_best:
+            resume_file = os.path.join(self.dir, 'optimizer_best.pt'.format(version))
+            torch.save(self.optimizer.state_dict(), resume_file)
 
     # def convert_tensor_device(self, *tensors):
     #     device = torch.device('cpu' if self.args.cpu else 'cuda')

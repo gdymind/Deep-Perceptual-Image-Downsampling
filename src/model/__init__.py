@@ -41,24 +41,17 @@ class BaseModel(nn.Module):
     def load_model(self, version):
         if version != 'X':
             resume_file = os.path.join(self.dir, 'model_{}.pt'.format(version))
-            self.load_state_dict(
-                torch.load(resume_file, map_location = self.device))
+            self.load_state_dict(torch.load(resume_file, map_location = self.device))
 
     def save(self, epoch, is_best = False):
         sd = self.state_dict()
 
-        torch.save(
-            sd,
-            os.path.join(self.dir, 'model_{}.pt'.format(epoch)))
+        torch.save(sd, os.path.join(self.dir, 'model_{}.pt'.format(epoch)))
 
-        torch.save(
-            sd,
-            os.path.join(self.dir, 'model_latest.pt'))
+        torch.save(sd, os.path.join(self.dir, 'model_latest.pt'))
 
         if is_best:
-            torch.save(
-                sd,
-                os.path.join(self.dir, 'model_best.pt'))
+            torch.save(sd, os.path.join(self.dir, 'model_best.pt'))
 
     def get_model(self):
         if self.n_GPUs == 1:

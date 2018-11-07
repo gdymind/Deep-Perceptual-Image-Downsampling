@@ -54,7 +54,7 @@ class Loss(modules.loss._Loss):
                 print('no scheduler for', l)
 
     def start_log(self): # start a new log line
-        self.log = torch.cat((self.log, torch.zeros(1, len(self.loss))))
+        self.log = torch.cat((self.log, torch.zeros((1, len(self.loss)), device = self.device)))
 
     def end_log(self, n_batches): # finish a new log line
         self.log[-1].div_(n_batches)
@@ -88,15 +88,7 @@ class Loss(modules.loss._Loss):
         return ''.join(log)
 
     def load_loss(self, args, version):
-        if version != 'X':
-            resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
-            self.load_state_dict(
-                torch.load(resume_file, map_location = self.device))
-            # self.log.load_state_dict(
-            #     torch.load(os.path.join(self.dir, 'loss_log_{}.pt'.format(version)),
-            #         map_location = self.device))
-        else:
-            for l in args.loss.split('+'):
+        for l in args.loss.split('+'):
                 loss_weight, loss_type = l.split('*')
 
                 if loss_type.find("SSIM") >= 0:
@@ -116,19 +108,25 @@ class Loss(modules.loss._Loss):
                     'function': loss_function
                     })
 
-            # just for displaying the total loss
-            if len(self.loss) > 1:
-                self.loss.append({
-                    'type': 'Total',
-                    'weight': 1.0,
-                    'function': None
-                    })
+        # just for displaying the total loss
+        if len(self.loss) > 1:
+            self.loss.append({
+                'type': 'Total',
+                'weight': 1.0,
+                'function': None
+                })
 
-            for l in self.loss:
-                if l['function'] is not None:
-                    print('{:.3f} * {}'.format(l['weight'], l['type']))
-                    self.loss_module.append(l['function'])
+        for l in self.loss:
+            if l['function'] is not None:
+                print('{:.3f} * {}'.format(l['weight'], l['type']))
+                self.loss_module.append(l['function'])
 
+        if version != 'X':
+            resume_file = os.path.join(self.dir, 'loss_{}.pt'.format(version))
+            self.load_state_dict(torch.load(resume_file, map_location = self.device))
+            resume_file = os.path.join(self.dir, 'loss_log_{}.pt'.format(version))
+            self.log = torch.load(resume_file, map_location = self.device)
+        else:
             self.log = torch.Tensor()
             self.log.to(self.device)
             self.loss_module.to(self.device)

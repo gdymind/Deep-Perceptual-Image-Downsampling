@@ -29,5 +29,5 @@ img2 = np.ascontiguousarray(np.transpose(img2, (2, 0, 1)))
 img2 = upscale_imgs(torch.Tensor(img2), scale).numpy().astype(int)
 img2 = np.ascontiguousarray(np.transpose(img2, (1, 2, 0)))
 
-res = ssim(img1, img2, win_size = 3, multichannel = True, gaussian_weights = False)
+res = ssim(img1, img2, win_size = 9, multichannel = True, gaussian_weights = False)
 print("ssim = {}".format(res))

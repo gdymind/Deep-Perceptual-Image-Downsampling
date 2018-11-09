@@ -14,6 +14,7 @@ class Checkpoint():
         self.dir_model = os.path.join(self.dir, "model")
         self.dir_result = os.path.join(self.dir, "results")
         self.dir_log = os.path.join(self.dir, "log.txt")
+        self.device = torch.device('cpu' if args.cpu else 'cuda')
 
         if args.reset:
             os.system("rm -rf " + self.dir)
@@ -53,4 +54,7 @@ class Checkpoint():
     def save(self, trainer, epoch, is_best = False):
         trainer.model.save(epoch, is_best)
         trainer.loss.save(epoch, is_best)
+        trainer.save(epoch, is_best)
+
         trainer.loss.plot_loss(epoch)
+        

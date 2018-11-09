@@ -31,9 +31,9 @@ class Trainer():
         os.makedirs(self.dir, exist_ok = True)
         os.makedirs(self.dir_log, exist_ok = True)
 
-
-        self.load_optimizer(args.resume_version)
+        self.load(args.resume_version)
         self.scheduler = self._create_scheduler(self.args, self.optimizer)
+        for _ in range(len(self.loss.log)): self.scheduler.step()
 
         self.error_last = 1e8 # error in the last step
 
@@ -58,7 +58,8 @@ class Trainer():
             optimizer_function = optim.Adam
             kwargs = {
                 'betas': (args.beta1, args.beta2),
-                'eps': args.epsilon
+                'eps': args.epsilon,
+                'amsgrad': True
             }
         elif args.optimizer == 'RMSprop':
             optimizer_function = optim.RMSprop
@@ -81,15 +82,24 @@ class Trainer():
 
         return scheduler
 
-    def load_optimizer(self, version):
-        # if version != 'X':
-        #     resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
-        #     self.optimizer.load_state_dict(
-        #         torch.load(resume_file, map_location = self.device))
-        # else:
-        #     self.optimizer = self._create_optimizer(self.args, self.model)
-        self.optimizer = self._create_optimizer(self.args, self.model)
+    def load(self, version):
+        if version != 'X':
+            resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+            self.optimizer = self._create_optimizer(self.args, self.model)
+            self.optimizer.load_state_dict(torch.load(resume_file, map_location = self.device))
+        else:
+            self.optimizer = self._create_optimizer(self.args, self.model)
+        # self.optimizer = self._create_optimizer(self.args, self.model)
 
+    def save(self, version, is_best = False):
+        resume_file = os.path.join(self.dir, 'optimizer_{}.pt'.format(version))
+        torch.save(self.optimizer.state_dict(), resume_file)
+        resume_file = os.path.join(self.dir, 'optimizer_latest.pt'.format(version))
+        torch.save(self.optimizer.state_dict(), resume_file)
+
+        if is_best:
+            resume_file = os.path.join(self.dir, 'optimizer_best.pt'.format(version))
+            torch.save(self.optimizer.state_dict(), resume_file)
 
     # def convert_tensor_device(self, *tensors):
     #     device = torch.device('cpu' if self.args.cpu else 'cuda')
@@ -133,9 +143,16 @@ class Trainer():
             self.ckp.save_log_txt('[Epoch {} Batch {}] lr = {:.2e}'.format(epoch, batch, Decimal(lr)))
 
             self.optimizer.zero_grad()
-            img_down = self.model(img)
-            img_up = self.upscale_imgs(img_down, self.cur_scale)
-            loss = self.loss(img, img_up)
+            if self.args.model == 'REC':
+                img_rec, img_down = self.model(img)
+                img_up = self.upscale_imgs(img_down, self.cur_scale)
+                loss_rec = self.loss(img, img_rec)
+                loss_up = self.loss(img, img_up)
+                loss = loss_rec + loss_up
+            else:
+                img_down = self.model(img)
+                img_up = self.upscale_imgs(img_down, self.cur_scale)
+                loss = self.loss(img, img_up)
             self.ckp.save_log_txt('[Epoch {} Batch {}] Total loss = {:.2e}'.format(epoch, batch, loss))
 
             if loss.item() < self.args.skip_threshold * self.error_last:
@@ -183,9 +200,16 @@ class Trainer():
                 img = data[0]
                 filename = data[1][0]
 
-                img_down = self.model(img)
-                img_up = self.upscale_imgs(img_down, self.cur_scale)
-                loss = self.loss(img, img_up, test = True)
+                if self.args.model == 'REC':
+                    img_rec, img_down = self.model(img)
+                    img_up = self.upscale_imgs(img_down, self.cur_scale)
+                    loss_rec = self.loss(img, img_rec, test = True)
+                    loss_up = self.loss(img, img_up, test = True)
+                    loss = loss_rec + loss_up
+                else:
+                    img_down = self.model(img)
+                    img_up = self.upscale_imgs(img_down, self.cur_scale)
+                    loss = self.loss(img, img_up, test = True)
                 self.ckp.save_log_txt('[Epoch {} Test] Total loss = {:.2e}'.format(epoch, loss))
 
                 if save_results:

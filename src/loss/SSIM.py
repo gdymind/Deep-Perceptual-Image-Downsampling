@@ -13,6 +13,12 @@ def create_window(window_size, channel):
     window = _2D_window.expand(channel, 1, window_size, window_size).contiguous() # c 1 n n
     return window
 
+def create_window_uniform(window_size, channel):
+    n = window_size * window_size
+    c = 1.0 / n
+    window = torch.ones(channel, 1, window_size, window_size) * c
+    return window
+
 def _ssim(img1, img2, window, window_size, channel, size_average = True):
     mu1 = F.conv2d(img1, window, padding = window_size//2, groups = channel) # b c n n
     mu2 = F.conv2d(img2, window, padding = window_size//2, groups = channel) # b c n n
@@ -36,13 +42,16 @@ def _ssim(img1, img2, window, window_size, channel, size_average = True):
         return ssim_map.mean(1).mean(1).mean(1)
 
 class SSIM(torch.nn.Module):
-    def __init__(self, args, window_size = 3, n_channel = 3, size_average = True):
+    def __init__(self, args, window_size = 8, n_channel = 3, size_average = True):
         super(SSIM, self).__init__()
-        self.window_size = window_size
+        self.scales = args.scales
+        self.cur_scale = self.scales[0]# current scale
+        self.window_size = self.cur_scale * 2
         self.size_average = size_average
         self.channel = n_channel
         self.device = torch.device('cpu' if args.cpu else 'cuda')
-        self.window = create_window(window_size, self.channel).to(self.device)
+        # self.window = create_window(window_size, self.channel).to(self.device)
+        self.window = create_window_uniform(window_size, self.channel).to(self.device)
 
     def forward(self, img1, img2):
         (_, channel, _, _) = img1.size()

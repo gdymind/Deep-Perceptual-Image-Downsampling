@@ -127,8 +127,10 @@ class Loss(modules.loss._Loss):
             resume_file = os.path.join(self.dir, 'loss_log_{}.pt'.format(version))
             self.log = torch.load(resume_file, map_location = self.device)
         else:
-            self.log = torch.Tensor()
-            self.log.to(self.device)
+            self.log = torch.Tensor(device = self.device)
+            self.log = self.log.to(self.device)
+            # print('loss self.device:', self.device)
+            # print('loss self.log device:', self.log.device)
             self.loss_module.to(self.device)
 
             # if args.precision == 'half': self.loss_module.half()

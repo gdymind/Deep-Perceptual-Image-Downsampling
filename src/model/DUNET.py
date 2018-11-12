@@ -31,12 +31,12 @@ class  DUNET(nn.Module):
 
         # shallow feature extraction (SFE)
         mlist = []
-        mlist.append(ConvHalfPad(n_channels, n_feature))
+        mlist.append(CBA_Block(n_channels, n_feature))
         self.SFE = nn.Sequential(*mlist)
 
         # unet
         self.Unet = UNet(n_feature, n_feature)
-        self.Acc = ConvHalfPad(n_feature, 3)
+        self.Acc = CBA_Block(n_feature, 3)
 
         # down scaling
         mlist = []

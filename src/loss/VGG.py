@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
 from utility import *
+from model.buildingBlocks import *
 
 class VGG(nn.Module):
     def __init__(self, conv_index = '54', data_range = 1):
@@ -14,19 +15,22 @@ class VGG(nn.Module):
         elif conv_index == '54':
             self.vgg = nn.Sequential(*mlist[:35])
 
-        # mean = (0.485, 0.456, 0.406)
-        # vgg_std = (0.229 * data_range, 0.224 * data_range, 0.225 * data_range)
+        mean = (0.485, 0.456, 0.406)
+        std = (0.229, 0.224, 0.225)
 
-        # self.SubMean = MeanShift(mean, std, True, data_range)
+        self.SubMean = MeanShift(mean, std)
 
         self.vgg.requires_grad = False
 
-    def forward(self, img_down, img):
-        vgg_img_down = self.vgg(img_down)
-        with torch.no_grad():
-            vgg_img = self.vgg(img.detach())
+    def forward(self, img_ori, img_up):
+        vgg_img_up = self.SubMean(img_up)
+        vgg_img_up = self.vgg(img_up)
 
-        loss = F.mse_loss(vgg_img_down, vgg_img)
+        with torch.no_grad():
+            vgg_img_ori = self.SubMean(img_ori.detach())
+            vgg_img_ori = self.vgg(vgg_img_ori)
+
+        loss = F.mse_loss(vgg_img_up, vgg_img_ori)
 
         return loss
 

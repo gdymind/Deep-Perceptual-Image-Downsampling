@@ -4,15 +4,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class MeanShift(nn.Module):
-    def __init__(self, device, data_mean, sign = -1, channels = 3):
-        super(MeanShift, self).__init__()
-        self.sign = sign
-        self.mean = torch.Tensor(data_mean).view(1, channels, 1, 1).contiguous().to(device)
+class MeanShift(nn.Conv2d):
+    def __init__(self, rgb_mean, rgb_std):
+        super(MeanShift, self).__init__(3, 3, kernel_size=1)
+        std = torch.Tensor(rgb_std)
+        self.weight.data = torch.eye(3).view(3, 3, 1, 1)
+        self.weight.data.div_(std.view(3, 1, 1, 1))
+        self.bias.data = -1 * torch.Tensor(rgb_mean)
+        self.bias.data.div_(std)
         self.requires_grad = False
-    def forward(self, x):
-        x += self.sign * self.mean
-        return x
+
+# class MeanShift(nn.Module):
+#     def __init__(self, device, data_mean, sign = -1, channels = 3):
+#         super(MeanShift, self).__init__()
+#         self.sign = sign
+#         self.mean = torch.Tensor(data_mean).view(1, channels, 1, 1).contiguous().to(device)
+#         self.requires_grad = False
+#     def forward(self, x):
+#         x += self.sign * self.mean
+#         return x
 
 
 # convolution that ensures out feature map shape == in feature map shape
@@ -28,7 +38,7 @@ def ConvFusion(in_channels, out_channels, bias = True):
 # conv + bn + activate(ReLU)
 class CBA_Block(nn.Sequential):
     def __init__(self, in_channels, out_channels, kernel_size = 3, stride = 1,
-        bias = True, bn = True, act = nn.ReLU(True)):
+        bias = True, bn = False, act = nn.ReLU(True)):
 
         mlist = [ConvHalfPad(in_channels, out_channels, kernel_size,
             stride = stride,  bias = bias)]
